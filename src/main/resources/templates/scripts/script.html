@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=0, user-scalable=no, target-densitydpi=medium-dpi" />
+	<meta name="format-detection" content="telephone=no,address=no,email=no">
+	<!-- 캐쉬 삭제  -->
+	<meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+	<meta http-equiv="Expires" content="-1">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<!-- 캐쉬 삭제  -->
+	<title>VOICE AGENT / 메인</title>
+	<!-------- css -->
+	<link rel="stylesheet" href="../../css/common.css"/>
+</head>
+<body>
+	<div class="wrap_app">
+		<div class="main_hd">
+			<div class="main_card">
+				<i class="ico_user"></i>
+				<strong th:text="${#authentication.principal.userId}">010.5468.5655</strong>
+				<p>교육생님 반갑습니다!</p>
+			</div>
+		</div>
+		<!--//main_hd-->
+		<div class="main_con">
+			<ul class="tab_target">
+				<li><a href="javascript:;" class="on"><label>전체</label><strong th:text="${countMap.totalCnt}">15</strong></a></li>
+				<li><a href="javascript:;"><label>완료</label><strong th:text="${countMap.completeCnt}">0</strong></a></li>
+				<li><a href="javascript:;"><label>미완료</label><strong th:text="${countMap.totalCnt - countMap.completeCnt}">0</strong></a></li>
+			</ul>
+			<!--//tab_target-->
+			<div class="tab_con script_list">
+				<div class="on">
+					<div id="div"></div>
+					<ul>
+						<li th:each="script : ${list}" th:data-idx ="${script.idx}" th:data-progress="${script.progress}" th:class="${script.progress ==100 ? 'complete' : '' }">
+							<a href="javascript:;" th:classappend="${script.callCount == 0 ? '' : (script.callCount == 1 ? 'ing ing1' : 'ing ing2')}" class="script_dtl_btn">
+								<!--  a 에 addClass(0개:'', 1개:'ing ing1', 2개이상:'ing ing2');-->
+								<span class="script_info">
+									<span>
+										<strong th:text="${script.script}">스크립트 제목은 여기에</strong>
+										<span class="script_option">
+											<span th:if="${script.callCount == 0 }">연습을 시작하세요.</span>
+											<span th:unless="${script.callCount == 0 }">진행률 [[${script.progress}]]%</span>
+											<!--<span th:if="${script.callCount > 1 }">총 [[${script.callCount}]]건</span>-->
+											<span th:if="${script.callCount >= 1 }" class="list_pro">
+												<dl><dt>완료</dt><dd>[[${script.completeCnt}]]건</dd></dl>
+												<dl><dt>미완료</dt><dd>[[${script.incompleteCnt}]]건</dd></dl>
+											</span>
+										</span>
+									</span>
+									<i class="arw_right gray"></i>
+								</span>
+								<!--//script_info-->
+								<span class="script_per">
+									<span class="script_per_count">
+										<span class="script_per_num" th:text="${script.progress}">0</span>%
+									</span>
+									<span class="script_chart"><span style="width: 0; "></span></span>
+								</span>
+								<!--//script_per-->
+							</a>
+						</li>
+					</ul>
+				</div>
+				<!--//전체-->
+			</div>
+			<!--//tab_con-->
+		</div>
+	</div>
+	<!--//wrap_app-->
+	<section class="page pages_script" id="page_script">
+		<th:block th:if="${script != null}">
+			<!--  pages_script addClass( 최초: '', 연습중:'call', 진행중/완료:'finish', 녹취듣기:'record call')-->
+			<div class="page_hd line">
+				<span class="page_title" th:text="${script.script}">스크립트 제목여기에</span>
+				<a href="javascript:;" class="page_close"><i class="ico_close"></i></a>
+			</div>
+			<!--//page_hd-->
+			<div class="page_con" th:data-script-idx="${script.idx}">
+				<div class="script_con">
+					<ul>
+						<li th:each="data,stat: ${script.list}" th:class="${#strings.equals('person',data.type) ? 'me' : ''}" th:data-onset="${data.onset}">
+							<p th:text="${#strings.equals('person',data.type) ? '상담사' : '고객'}">상담사</p>
+							<th:block th:if="${#strings.equals('person',data.type)}">
+								<audio th:id="|audio-${data.sort}|" th:unless="${#strings.isEmpty(script.list[stat.index].wavByScript)}">
+									<source th:src="|http://112.217.204.155:8080/hanil/ubase${script.list[stat.index].wavByScript}|">
+								</audio>
+							</th:block>
+							<div  th:classappend="${#strings.equals('person',data.type) ? 'ex' : 'sentence'}" th:style="${#strings.isEmpty(data.timelineText) ? 'white-space : pre-line;'
+							 : ''}"
+								  th:utext="${#strings.isEmpty(data.timelineText) ? data.txtByScript : data.timelineText}">안녕하세요. 상담사입니다.
+							</div>
+							<th:block th:if="${#strings.equals('person',data.type) and !(#strings.isEmpty(data.txtByPerson))} ">
+								<div class="cmt sentence" th:utext="${data.txtByPerson}">"안녕하세요. 상담사 홍길동입니다."</div>
+								<div class="score">발화점수 : <strong th:text="|${data.score}점|"> 50점</strong></div>
+							</th:block>
+						</li>
+					</ul>
+				</div>
+				<!--//script_con-->
+			</div>
+			<!--//page_con-->
+			<div class="page_btn">
+				<button type="button" class="btn_p btn_practice" onclick="btn_practice();">연습하기</button>
+				<button type="button" class="btn_p btn_record" onclick="btn_record();">녹취 듣기</button>
+			</div>
+			<!--//page_btn-->
+			<div class="record_cntl" style="display: none;">
+				<div id="song" th:if="${!#strings.isEmpty(wav)}" class="record_hear" >
+					<audio id="audio-player" controls="" >
+						<source th:src="|http://112.217.204.155:8080/hanil/ubase/history${wav}|">
+					</audio>
+				</div>
+				<button type="button" class="btn_line" onclick="record_close();">종 료</button>
+			</div>
+			<div class="practice_cntl" style="display: none;">
+				<button type="button" class="btn_line" id="practice_stop_btn">종 료</button>
+			</div>
+			<!--//record_cntl -->
+		</th:block>
+	</section>
+	<!--//스크립트 상세-->
+	<section class="pop " id="p_balsin">
+		<div class="pop_box">
+			<div class="pop_con align_c">
+				<p class="balsin_sec m-b40"><span id="balsin_sec">5초</span> 후 상담이 시작됩니다.</p>
+				<div class="balsin_script m-b20">
+					<strong>스크립트 제목은 여기에</strong><br>로 상담 연습이 진행됩니다.
+				</div>
+<!--				<div class="balsin_num">-->
+<!--					<label class="label m-b8">발신번호</label>-->
+<!--					<p>070-4335-4615</p>-->
+<!--				</div>-->
+			</div>
+			<!--//pop_con-->
+			<div class="pop_btn_area">
+				<button type="button" class="btn_p" onclick="call();">확 인</button>
+			</div>
+		</div>
+		<!--//pop_box-->
+	</section>
+	<!--//발신팝업 -->
+	<section class="pop " id="p_script_list">
+		<div class="pop_box">
+			<div class="pop_con p-l24 p-r24">
+				<label class="label m-b24">스크립트를 선택하세요</label>
+				<ul class="script_type_list">
+				</ul>
+			</div>
+			<!--//pop_con-->
+			<div class="pop_btn_area btn_area_more">
+				<button type="button" class="btn_line" id="new_practice_btn">새 연습</button>
+				<button type="button" class="btn_p" id="call_result_btn">확 인</button>
+			</div>
+		</div>
+		<!--//pop_box-->
+	</section>
+	<!--//2개이상 스크립트 목록-->
+	<div id="fade" class="black_background"></div>
+	<div id="light" class="alert">
+		<p class="alert_txt">스크립트가 종료되었습니다. <br>잠시만 기다려주세요.</p>
+		<div class="loading_transfer">
+			<div>
+				<span class="loading_transfer_bar">
+					<span></span>
+				</span>
+				<span class="loading_transfer_txt">0%</span>
+			</div>
+		</div>
+	</div>
+	<!--//-->
+	<div class="pop" id="call_start_btn_box">
+		<button type="button" class="btn_p ft_20" style="height:128px;" id="call_start_btn"><i class="ico_play wh m-r8 i16"></i>연습 시작하기</button>
+
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script>
+	<script th:src="@{/js/jquery-3.6.0.js}"></script>
+	<script th:src="@{/js/audioplayer.js}"></script>
+	<script th:src="@{/js/jquery-ui.js}"></script>
+	<script>
+
+
+
+
+
+	let sockJs, stomp, roomId, timerId;
+	let phone_number = '[[${#authentication.principal.userId}]]';
+
+	//percent 자동계산
+	$(document).ready(function(){
+
+		$('.script_per_num').each(function(){
+			const num = $(this).text();
+
+			$(this).parents('.script_per').find('.script_chart span').css( 'width',num +'%'); //그래프
+			$(this).parents('.script_per').find('.script_per_count').css('left', num + '%');
+
+		});
+
+		const click_idx = localStorage.click_idx;
+		if(click_idx){
+			$(".script_list li[data-idx='" + click_idx + "'] a").click();
+			delete localStorage.click_idx;
+			delete localStorage.call_end;
+		}
+
+	});
+
+	let interval;
+	/*------------common*/
+
+	//tab
+	$('.tab_target a').click(function(){
+		var idx = $('.tab_target a').index($(this));
+		$('.tab_target a').removeClass('on').eq(idx).addClass('on');
+
+		$(".tab_con li").show();
+
+		if(idx == 1){
+			$(".tab_con li:not([class=complete])").hide();
+		} else if(idx == 2){
+			$(".tab_con li.complete").hide();
+		}
+
+		//$('.tab_con>div').removeClass('on').eq(idx).addClass('on');
+	});
+
+	/*------------진행건수에 따른 화면 변화*/
+
+	//통화중 (연습화면)
+	function call(){
+		if(interval){
+			clearInterval(interval);
+		}
+		$('.pages_script').addClass('call'); //연습화면
+
+		pop_close(); //팝업 종료
+		//아웃바운드 콜 신호 보내기
+		$.ajax(
+				{
+					url: 'http://112.217.204.155:6783/outbound_call', // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+					data: { "phone_number": phone_number, "scenario_idx" : $("#page_script > .page_con").data("script-idx"), "room_id" : roomId },  // HTTP 요청과 함께 서버로 보낼 데이터
+					method: "POST",   // HTTP 요청 메소드(GET, POST 등)
+					timeout : 3000,
+					async : false
+				}
+		).done(function(response) { // HTTP 요청이 성공하면 요청한 데이터가 done() 메소드로 전달됨.
+					if(JSON.parse(response).result =="SUCCESS") {
+						$("#call_start_btn_box").addClass("open");
+					}
+				}
+		).fail(function(jqXHR, status, errorThrown) { // HTTP 요청이 실패하면 오류와 상태에 관한 정보가 fail() 메소드로 전달됨.
+
+					// Our error logic here
+					var msg = '';
+					if (jqXHR.status === 0) {
+						msg = 'No connection. Verify Network.';
+						//ERR_CONNECTION_REFUSED hits this one
+					} else if (jqXHR.status == 404) {
+						msg = 'Requested page not found. [404]';
+					} else if (jqXHR.status == 500) {
+						msg = 'Internal Server Error [500].';
+					} else if (status === 'parsererror') {
+						msg = 'Requested JSON parse failed.';
+					} else if (status === 'timeout') {
+						msg = 'Time out error.';
+					} else if (status === 'abort') {
+						msg = 'Ajax request aborted.';
+					} else {
+						msg = 'Uncaught Error.\n' + JSON.parse(jqXHR.responseText).result
+					}
+
+					alert(msg);
+					window.location.reload();
+				})
+	}
+
+	//녹취 듣기 click
+	function btn_record(){
+		const sound  = document.getElementById("audio-player");
+
+		if(!sound){
+			alert("녹취 파일이 존재하지 않습니다.");
+			return;
+		}
+
+		$('.pages_script').addClass('call record');
+		$('.pages_script li').addClass("pointer");
+		$('.pages_script').removeClass('finish ');
+		$('.page_con').scrollTop(0);
+
+		sound.currentTime = 0
+		// sound.play();
+
+		const temp_array = new Array();
+		$("#page_script li").each(function(){
+			temp_array.push(this);
+		});
+
+		sound.addEventListener("timeupdate", function(e){
+
+			for (let i = temp_array.length -1 ; i >= 0  ; i--) {
+				const li = temp_array[i];
+				if($(li).data("onset") < sound.currentTime) {
+
+					$(".pages_script li:lt("+$(li).index()+") > .sentence").addClass("blue");
+					$(li).find(".sentence").addClass("blue");
+					$(".pages_script li:gt("+$(li).index()+") > .blue").removeClass("blue");
+
+					$(li).attr("tabindex", -1).focus();
+
+					return;
+				}
+			}
+
+		});
+
+		sound.addEventListener("pause",()=>{
+			const page_script = $("#page_script");
+			if($(page_script).hasClass("finish")){
+				$(".blue").removeClass("blue");
+			}
+		});
+	}
+
+	//녹취 듣기 종료
+	function record_close(){
+		const audio = document.getElementById("audio-player");
+
+		if(audio.paused){
+			$(".blue").removeClass("blue");
+		} else {
+			audio.pause();
+		}
+
+		$('.pages_script').removeClass('record call');
+		$('.pages_script li').removeClass('pointer');
+		$('.pages_script').addClass('finish');
+
+		$('.page_con').scrollTop(0);
+
+	}
+
+	//발신번호 확인 팝업
+	function btn_practice(){
+		 const script_title = $("#page_script .page_title").text();
+
+		$("#p_balsin .balsin_script > strong").text(script_title);
+		$('#p_balsin').addClass('open');
+		$('.wrap_app').addClass('scroll_n');
+		var timer = 5;
+		//초 카운트
+		interval = setInterval(function() {
+			timer--;
+			$('#balsin_sec').text(timer+'초');
+			//5초 후
+			if (timer === 0){
+				clearInterval(interval); //0초까지만
+				pop_close(); //팝업 종료
+				call(); //화면:통화중
+				$('#balsin_sec').text('5초');
+				$(".page_con")[0].scrollTo(0,0);
+			};
+		}, 1000);
+
+	}
+
+	/*------------진행건수에 따른 화면 불러오기*/
+
+	$(".script_dtl_btn").click(function(){
+		const script_idx = $(this).parent().data("idx");
+		if($(this).is(".ing")){
+			script_more(script_idx, $("strong",this).text());
+		}
+		// else if($(this).hasClass("ing1")){
+		// 	script_only(script_idx);
+		// }
+		else {
+			script_first(script_idx);
+		}
+	});
+
+
+	//진행건수 0개 일 경우 (default) -->
+	function script_first(idx){
+
+		$.ajax({
+			url: "/scripts/detail/"+idx, // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+			method: "GET",   // HTTP 요청 메소드(GET, POST 등)
+				})
+				// HTTP 요청이 성공하면 요청한 데이터가 done() 메소드로 전달됨.
+				.done(function(result) {
+
+					$("#page_script").replaceWith(result);
+					$('#page_script').addClass('open');
+					$('.wrap_app').addClass('scroll_n');
+					const onScreen_height = document.querySelector(".page_con").getBoundingClientRect().bottom;
+					const practice_btn_height = document.querySelector(".page_con").getBoundingClientRect().bottom;
+
+					$("#page_script li.me").each(function(a,b){
+
+						const agent_div = $("div:first",b);
+						//데이터 저장
+						const timeline_txt = agent_div.text();
+						let timeline_txt_json_list;
+						//비우기
+						let ele='';
+						$(agent_div).empty();
+						if(timeline_txt.indexOf('{') == -1){
+							$(agent_div).append(timeline_txt);
+						} else {
+							timeline_txt_json_list = JSON.parse(timeline_txt.replace(/\'/gi,'"'));
+							for (let i = 0; i < timeline_txt_json_list.length; i++) {
+
+								const timeline_txt_json = timeline_txt_json_list[i];
+								if(timeline_txt_json['newLine'] === 'true'){
+									ele = document.createElement("br");
+								} else {
+									ele = document.createElement('span');
+									ele.innerHTML = timeline_txt_json.text;
+								}
+								ele.setAttribute("id","c_"+ i);
+								ele.classList.add("karaoke");
+								$(agent_div).append(ele);
+
+							}
+
+							$("span", agent_div).append("\u00a0");
+						}
+
+						const audioPlayer = $("audio",this)[0];
+						if(audioPlayer){
+							audioPlayer.addEventListener("timeupdate",function(e){
+
+								timeline_txt_json_list.forEach(function(ele, idx, array){
+
+									if(audioPlayer.currentTime >= ele.startTime && ele.newLine === 'false' ){
+										if( onScreen_height - 100 - $(".practice_cntl")[0].getBoundingClientRect().height < $(".karaoke",agent_div)[idx].getBoundingClientRect().top){
+											$(".page_con").animate({scrollTop : $(".page_con").scrollTop() + onScreen_height - 200}, 500);
+										}
+										$(".karaoke",agent_div)[idx].classList.add("blue");
+										return false;
+									}
+								})
+							});
+						}
+					});
+
+					pop_close(); //팝업 종료
+					stomp_connect();
+
+				})
+				// HTTP 요청이 실패하면 오류와 상태에 관한 정보가 fail() 메소드로 전달됨.
+				.fail(function(xhr, status, errorThrown) {
+				})
+	}
+
+	//진행건수 1개 일 경우
+	function script_only(idx){
+		$.get("/scripts/result/"+idx).done(function(result){
+			$.ajax({
+				url: "/scripts/detail/"+result[0].idx+"?isNewScript=false", // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+				method: "GET",   // HTTP 요청 메소드(GET, POST 등)
+
+			}).done(function(result) { // HTTP 요청이 성공하면 요청한 데이터가 done() 메소드로 전달됨.
+				$("#page_script").replaceWith(result);
+				$('#page_script').addClass('open finish');
+				$('.wrap_app').addClass('scroll_n');
+				pop_close(); //팝업 종료
+			}).fail(function(xhr, status, errorThrown) { // HTTP 요청이 실패하면 오류와 상태에 관한 정보가 fail() 메소드로 전달됨.
+
+			})
+		})
+	}
+
+
+	//진행건수 2개이상 일 경우 목록 팝업
+	function script_more(idx,script){
+		$.ajax({
+			url: "/scripts/result/"+idx, // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+			method: "GET",   // HTTP 요청 메소드(GET, POST 등)
+		})
+		// HTTP 요청이 성공하면 요청한 데이터가 done() 메소드로 전달됨.
+		.done(function(result) {
+			$(".script_type_list").empty();
+			result.forEach(function(item, index, arr2){
+				//비우고 시작!
+				var complete_date = $("<span>").text(item.endDate + " 완료");
+
+				const temp = $("<li>").addClass("ing ing2 chk")
+								.append($("<input>").attr({"type":"radio","id":"chk"+index,"name":"check", "value":item.idx}))
+								.append($("<label>").attr("for","chk"+index)
+										.append($("<span>").addClass("chk_shape"))
+										.append($("<span>").addClass("chk_txt")
+												.append($("<span>").addClass("ft_18 m-b8").text(script))
+												.append($("<span>").addClass("script_option m-b12")
+														.append($("<span>").text("진행률 "+ item.progress +"%"))
+														.append(complete_date)
+												)
+												.append($("<span>")
+														.append($("<span>").addClass("tag m-r8").text("최고 "+ item.maxScore +"점"))
+														.append($("<span>").addClass("tag red").text("최저 "+ item.minScore +"점"))
+												)
+										)
+								)
+				$(".script_type_list").append(temp);
+			});
+
+			$(".script_type_list input[name='check']:first").prop("checked",true);
+			$("#new_practice_btn").attr("data-idx",idx);
+			$('#p_script_list').addClass('open');
+			$('.wrap_app').addClass('scroll_n');
+
+
+			$("#p_script_list .pop_con").scrollTop(0);
+		})
+		// HTTP 요청이 실패하면 오류와 상태에 관한 정보가 fail() 메소드로 전달됨.
+		.fail(function(xhr, status, errorThrown) {
+		})
+
+	}
+
+	//스크립트 목록 팝업에서 다음화면으로
+	$("#call_result_btn").click(function(e){
+		$.ajax({
+			url: "/scripts/detail/"+$(".script_type_list input[name='check']:checked").val()+"?isNewScript=false", // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+			method: "GET",   // HTTP 요청 메소드(GET, POST 등)
+		})
+				// HTTP 요청이 성공하면 요청한 데이터가 done() 메소드로 전달됨.
+				.done(function(result) {
+					$("#page_script").replaceWith(result);
+					$('#page_script').addClass('open finish');
+					$('.wrap_app').addClass('scroll_n');
+					$('audio').audioPlayer();
+					pop_close(); //팝업 종료
+				})
+				// HTTP 요청이 실패하면 오류와 상태에 관한 정보가 fail() 메소드로 전달됨.
+				.fail(function(xhr, status, errorThrown) {
+					alert("서버 오류입니다.");
+					location.reload();
+				})
+
+	});
+
+
+	/*------------close*/
+
+	//팝업 x버튼 닫기
+	function pop_close(obj){
+		$('.pop').removeClass('open');
+	}
+
+	// 외부영역 클릭 시 팝업 닫기
+	 $(document).mouseup(function (e){
+	 	const LayerPopup = $("#p_script_list");
+	 	if(LayerPopup.has(e.target).length === 0){
+	 		LayerPopup.removeClass("open");
+			$(".wrap_app").removeClass('scroll_n');
+	 	}
+	 });
+
+	//페이지 닫기
+	$(document).on('click','.page_close',function(){
+
+		$(this).parents('.page').removeClass('open');
+		$(".wrap_app").removeClass('scroll_n');
+		if(stomp && stomp.connected){
+			stomp_disconnect();
+		}
+	});
+
+
+	$(document).on("click",".pointer",function(){
+
+		$(".pages_script li:gt("+$(this).index()+") > .blue").removeClass("blue");
+		const audio = document.getElementById("audio-player");
+		audio.currentTime = $(this).data("onset");
+
+		if(audio.paused){
+			audio.play();
+		}
+	});
+
+
+	$("#new_practice_btn").click(function(e){
+		e.preventDefault();
+
+		script_first($(this).attr("data-idx"));
+	});
+
+
+	function stomp_connect(){
+
+		sockJs = new SockJS("/ws");
+		stomp = Stomp.over(sockJs);
+
+		//개발자 도구 프레임 안보이게 하기
+		// stomp.debug= null;
+		stomp.connect({}, function (frame){
+			console.log("STOMP Connection");
+			roomId = frame.headers['user-name'];
+			localStorage.call_end =false;
+			//4. subscribe(path, callback)으로 메세지를 받을 수 있음
+			stomp.subscribe("/sub/ws/" + frame.headers['user-name'], function (message) {
+
+				const data = JSON.parse(message.body);
+				const audioPlayer = document.getElementById("audio-"+data.seq);
+
+				if(data.seq == 0){
+					localStorage.call_end = true;
+					if(data.stt_task == null){
+						showLayer();
+					} else {
+						$(".loading_transfer_txt").text(data.stt_task + "%");
+						$(".loading_transfer_bar span").css("width", data.stt_task+ "%");
+						if(data.stt_task == 100 ){
+							$("#light > .alert_txt").html("<p>정상적으로 저장되었습니다.<br>첫 페이지로 이동합니다.</p>");
+						}
+						return;
+					}
+				}
+
+				if(data.seq == -1 && localStorage.call_end){
+					hideLayer();
+					stomp_disconnect();
+					const script_idx = $("#page_script > .page_con").data("script-idx");
+					localStorage.click_idx = script_idx;
+					window.location.reload();
+				}
+
+				if(data.seq == -2){
+					alert("상담 통화를 종료하셨습니다.");
+					stomp_disconnect();
+					window.location.reload();
+				}
+
+				if(audioPlayer){
+					$(".page_con").animate({scrollTop: audioPlayer.nextElementSibling.offsetTop-70});
+					audioPlayer.muted =true;
+					$(audioPlayer).parent().addClass("ready");
+
+					if(data.play_stat == 1 ){
+						console.log(data.play_stat);
+						audioPlayer.play();
+					} else if(data.play_stat == 0) {
+						console.log(data.play_stat);
+						audioPlayer.pause();
+					}
+				} else {
+					//오디오 데이터가 없으면, 없애기
+					console.log("오디오 데이터가 없습니다.");
+				}
+			});
+
+		});
+	}
+
+
+	function stomp_disconnect(){
+		stomp.disconnect();
+	}
+
+	function wrapWindowByMask() {
+		//화면의 높이와 너비를 구한다.
+		var maskHeight = $(document).height();
+		var maskWidth = $(window).width();
+
+		//마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
+		$('#fade').css({ 'width': maskWidth, 'height': maskHeight });
+	}
+
+	/// 화면의 중앙에 레이어띄움
+	function showLayer() {
+		wrapWindowByMask();
+
+		$('#fade').show();
+		$('#light').show();
+
+	}
+
+	function hideLayer() {
+
+		$('#fade').hide();
+		$('#light').hide();
+
+	}
+
+	function sleep(sec) {
+		return new Promise(resolve => setTimeout(resolve, sec * 1000));
+	}
+
+	$(document).on("click","#call_start_btn", function(){
+		// api 호출 보내기.
+		$.ajax({url : "http://112.217.204.155:6783/start_button",data : {"room_id" : roomId},method : "POST"})
+				.done(function(result){
+					console.log(result);
+					$("#call_start_btn_box").removeClass("open");
+					$("#page_script").addClass("practice");
+				})
+				.fail(function(result){
+					console.log(result);
+					window.location.reload();
+				});
+	})
+
+	$(document).on("click","#practice_stop_btn",function(){
+
+		$.ajax({url : "http://112.217.204.155:6783/stop_button",data : {"room_id" : roomId},method : "POST"})
+				.done(function(result){
+					console.log(result);
+				})
+				.fail(function(result){
+					console.log(result);
+					// window.location.reload();
+				});
+	});
+
+	</script>
+</body>
+</html>

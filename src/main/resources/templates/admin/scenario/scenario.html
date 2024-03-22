@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=0, user-scalable=no, target-densitydpi=medium-dpi" />
+	<meta name="format-detection" content="telephone=no,address=no,email=no">
+	<!-- 캐쉬 삭제  -->
+	<meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+	<meta http-equiv="Expires" content="-1">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<!-- 캐쉬 삭제  -->
+	<title>시나리오 관리</title>
+	<!------------------------------ favicon-->
+	<link rel="apple-touch-icon" sizes="57x57" href="../../static/images/favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="../../static/images/favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="../../static/images/favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="../../static/images/favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="../../static/images/favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="../../static/images/favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="../../static/images/favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="../../static/images/favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="../../static/images/favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="../../static/images/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="../../static/images/favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="../../static/images/favicon/favicon-16x16.png">
+	<link rel="manifest" href="/manifest.json">
+	<meta name="msapplication-TileColor" content="#ffffff">
+	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+	<meta name="theme-color" content="#ffffff">
+
+	<!------------------------------ css-->
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+	<link rel="stylesheet" href="../../static/css/common.css"/>
+	<link rel="stylesheet" href="../../static/css/pages.css"/>
+</head>
+<body>
+	<div class="wrap">
+		<div class="menu bg-line30">
+			<div class="menuCon">
+				<i class="logo"></i>
+				<div class="profile">
+					<div class="profileBox">
+						<div class="profileImg"></div>
+						<div class="profileEdit"><a href="javascript:;" onclick="my();">홍길동<i class="ico-arw-line wh"></i></a></div>
+					</div>
+				</div>
+				<ul class="nav">
+					<li><a href="javascript:;" onclick="script();"><span>스크립트 관리</span></a></li>
+					<li><a href="javascript:;" onclick="scenario();" class="on"><span>시나리오 관리</span></a></li>
+					<li><a href="javascript:;" onclick="student();" ><span>교육생 관리</span></a></li>
+					<li><a href="javascript:;" onclick="user();" ><span>사용자 관리</span></a></li>
+				</ul>
+			</div>
+			<button type="button" class="logout" onclick="logout();"><i class="ico-logout i20"></i>로그아웃</button>
+		</div>
+		<!--//menu-->
+		<div class="content ">
+			<div class="pageHd"><h1>시나리오 관리</h1></div>
+			<div class="schArea" id="search" >
+				<div>
+					<ul class="chkArea">
+						<li class="chk">
+							<input type="checkbox" id="userY" name="userStatus" checked>
+							<label for="userY">
+								<span class="chkShape"></span>
+								<span class="chkTxt">사용 중</span>
+							</label>
+						</li>
+						<li class="chk">
+							<input type="checkbox" id="userN" name="userStatus" checked>
+							<label for="userN">
+								<span class="chkShape"></span>
+								<span class="chkTxt">미사용</span>
+							</label>
+						</li>
+					</ul>
+					<div class=" iptSch">
+						<input type="text" placeholder="키워드 입력">
+						<button type="button" ><i class="ico-search"></i></button>
+					</div>
+				</div>
+				<button type="button" class="btn_p" onclick="scenarioNew();"><i class="ico-plus wh"></i>시나리오 생성</button>
+			</div>
+			<!--//schArea-->
+			<div class="con flexBetween gap64" id="scenarioCon" >
+				<div class="scenarioList scroll" id="scenarioList">
+					<dl>
+						<dt><span class="tag tag1 blue">사용 중</span></dt>
+						<dd>
+							<a href="javascript:;">
+								<i class="scenarioStatusImg"></i>
+								<span class="scenarioTitle">고객 응대 시나리오 1</span>
+								<span class="scenarioSubTitle">서브문구는 여기에서브문구는 여기에서브문구는 여기에서브문구는 여기에</span>
+								<span class="scenarioDate">2024.03.13 18:00 수정</span>
+							</a>
+						</dd>
+					</dl>
+					<dl class="ready">
+						<dt><span class="tag tag1">미사용</span></dt>
+						<dd>
+							<a href="javascript:;">
+								<i class="scenarioStatusImg"></i>
+								<span class="scenarioTitle">고객 응대 시나리오 1</span>
+								<span class="scenarioSubTitle">서브문구는 여기에서브문구는 여기에서브문구는 여기에서브문구는 여기에</span>
+								<span class="scenarioDate">2024.03.13 18:00 수정</span>
+							</a>
+						</dd>
+					</dl>
+				</div>
+				<!--//scenarioList-->
+				<div class="scenarioConversion show">
+					<!-- 변환중인 파일 0 개일 때 removeClass('show')-->
+					<div><span class="tag tag1 m-l20 red">변환 중</span></div>
+					<div class="scenarioConversionList">
+						<div>
+							<strong class="ft20">시나리오 변환 중 <span class="ftRed01">3</span></strong>
+							<p class="m-t8 ftGray06 li22">mp3 파일로 변환이 완료 되면<br>상세 보기, 편집 기능을 사용할 수 있습니다.</p>
+						</div>
+						<div class="scenarioConversionListItem">
+							<dl>
+								<dt><i></i>시나리오 생성 중</dt>
+								<dd>
+									<p class="scenarioTitle">고객 응대 시나리오 1</p>
+									<p class="scenarioSubTitle">서브문구는 여기에서브문구는 여기에서브문구는 여기에서브문구는 여기에</p>
+									<p class="scenarioDate">2024.03.13 18:00 </p>
+								</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<!--//scenarioConversion, 변환 중-->
+			</div>
+			<!--//con-->
+			<div class="empty ">
+				<!-- empty addClass('open'); -->
+				<i class="emptyIcon"></i>
+				<strong class="ft16">시나리오를 생성할 수 없습니다.</strong>
+				<p class="ftGray06 m-t8">스크립트 업로드 후 시나리오 생성이 가능합니다.</p>
+				<div class="btnArea m-b20">
+					<button type="button" onclick="script();" class="btn_p">스크립트 생성하기</button>
+				</div>
+			</div>
+		</div>
+		<!--//content-->
+	</div>
+	<!--//wrap-->
+
+	<section class="pop " id="p_scenarioDetail">
+		<div class="popBox bg-white">
+			<div class="popHd">
+				<h2>시나리오 상세</h2>
+				<a href="javascript:;" class="popClose" onclick="popClose(this);"></a>
+			</div>
+			<div class="popCon">
+				<div class="scenarioList scenarioDetailInfo">
+					<!-- dl addClass('사용중:디폴트', '미사용:ready')-->
+					<dl>
+						<dt class="flexBetween">
+							<span class="tag tag1 blue" id="scenarioStatus">사용 중</span>
+							<!-- 사용 여부 toggle addClass('on')-->
+							<button type="button" class="toggle on" onclick="scenarioStatusToggole(this);">
+								<label>사용 여부</label>
+								<span class="toggleBar"><span></span></span>
+							</button>
+						</dt>
+						<dd>
+							<span class="flexC gap16 scenarioDetailTitle">
+								<i class="scenarioStatusImg"></i>
+								<span>
+									<span class="scenarioTitle m-t0">고객 응대 시나리오 1</span>
+									<span class="scenarioSubTitle m-t4">서브문구는 여기에서브문구는 여기에서브문구는 여기에서브문구는 여기에</span>
+								</span>
+							</span>
+							<span class="scenarioDetailcharacter">
+								<span class="characterSetting ">
+									<label class="ftW600">캐릭터</label>
+									<span  class="sel1 noArw flexC p-r16">
+										<span class="selImg characterView"></span>
+										<span class="ft16 ftW600">은지</span>
+									</span>
+									<span class="flexC gap8">
+										<i class="emotion emotion4"></i>
+										<span type="button" >화남</span>
+									</span>
+									<button type="button" class="m-lAuto btn-play" onclick="preview(this);"><i class="ico-play"></i></button>
+								</span>
+
+							</span>
+						</dd>
+					</dl>
+				</div>
+				<!--//scenarioDetailInfo-->
+				<ul class="scenarioDetailChat">
+					<!-- 고객일경우 li addClass('customer') -->
+					<!-- 현재 대화창 li addClass('active')-->
+					<!-- 하이라이트 span addClass('reading') -->
+					<li><div>안녕하세요? 상담사 홍길동입니다.<br>궁금한 사항이 있으신가요?</span></div></li>
+					<li class="customer"><div>세탁기 급수가 안되요. (IE에러가 발생되요.)</div></li>
+					<li class="active"><div>단수 상태이거나 수도꼭지가 열려 있는지 확인해 보셨나요? 필터를 청소해 주시고 급수 호수가 꺾이지 않았는지 확인해 주세요. <span class="reading">1. 수도꼭지를 잠근 후 전원코드를 빼주세요.</span></div>
+					</li>
+					<li class="customer"><div>세탁기 급수가 안되요. (IE에러가 발생되요.)</div></li>
+					<li><div>단수 상태이거나 수도꼭지가 열려 있는지 확인해 보셨나요? 필터를 청소해 주시고 급수 호수가 꺾이지 않았는지 확인해 주세요.
+					</div></li>
+
+				</ul>
+				<!--//scenarioDetaiChat-->
+			</div>
+			<div class="popFooter">
+				<button type="button" class="btn_l" onclick="scenarioDelete(this)">삭 제</button>
+				<div class="btnArea">
+					<button type="button" class="btn_l" onclick="scenarioCopy(this)">복 사</button>
+					<button type="button" class="btn_p" onclick="scenarioSave(this)">편 집</button>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--//시나리오 상세-->
+
+	<section class="pop  alert err" id="p_scenarioDelteAlert">
+		<div class="alertBox">
+			<div class="alertIcon"><i></i></div>
+			<div class="alertTxt">
+				<p class="alertTitle">‘고객 응대 시나리오 1’ 를<br><strong class="ftWhite">삭제</strong>하시겠습니까?</p>
+				<p class="alertSub">작성한 시나리오가 모두 사라지며,<br>복구가 불가능합니다.</p>
+			</div>
+			<div class="alerFooter">
+				<button type="button" class="btn_l" onclick="popClose(this);">닫 기</button>
+				<button type="button" class="btn_p" onclick="saveScenarioDelete(this);">삭 제</button>
+			</div>
+		</div>
+	</section>
+	<!--//시나리오 삭제 alert -->
+
+	<section class="pop " id="p_scenarioInfo">
+		<div class="popBox" style="width:600px;">
+			<div class="popHd">
+				<h2 id="scenarioSettingName">시나리오 복사</h2>
+				<a href="javascript:;" class="popClose" onclick="popClose(this);"></a>
+			</div>
+			<!--//popHd-->
+			<div class="popCon ">
+				<ul class="form">
+					<li>
+						<label><span class="tag tag1 red">시나리오명</span></label>
+						<div class="ipt">
+							<input id="scenarioNameIpt" placeholder="최대 12글자" maxlength="12">
+						</div>
+					</li>
+					<li>
+						<label><span class="tag tag1 ">설명</span></label>
+						<div class="ipt">
+							<textarea placeholder="간단한 설명을 입력 하세요."></textarea>
+						</div>
+					</li>
+				</ul>
+				<!--//form-->
+			</div>
+			<!--//popCon-->
+			<div class="popFooter">
+				<span></span>
+				<button type="button" class="btn_p" onclick="saveScenarioName(this);">생성하기</button>
+			</div>
+			<!--//popFooter-->
+		</div>
+	</section>
+	<!--//시나리오생성-->
+
+	<section class="pop " id="p_my">
+		<div class="popBox" style="width:600px;">
+			<div class="popHd">
+				<h2>내 정보</h2>
+				<a href="javascript:;" class="popClose" onclick="popClose(this);"></a>
+			</div>
+			<!--//popHd-->
+			<div class="popCon m-b20">
+				<ul class="form">
+					<li>
+						<label><span class="tag tag1 ">회사명</span></label>
+						<div class="ipt">
+							<input type="text" value="한일네트웍스" disabled="">
+						</div>
+					</li>
+					<li>
+						<label><span class="tag tag1 ">소속</span></label>
+						<div class="ipt">
+							<input type="text" value="FS사업팀" disabled="">
+						</div>
+					</li><li>
+						<label><span class="tag tag1 ">이름</span></label>
+						<div class="ipt">
+							<input type="text" value="홍길동">
+						</div>
+					</li><li>
+						<label><span class="tag tag1 ">연락처</span></label>
+						<div class="ipt">
+							<input type="text" value="010-4565-4565">
+						</div>
+					</li>
+				</ul>
+				<!--//form-->
+			</div>
+			<!--//popCon-->
+			<div class="popFooter">
+				<button type="button" class="btn_l" onclick="myPassword(this);">비밀번호 변경</button><div class="btnArea">
+					<button type="button" class="btn_p" onclick="myInfoSave(this);">저장</button>
+				</div>
+			</div>
+			<!--//popFooter-->
+		</div>
+	</section>
+	<!--//내 정보-->
+
+	<section class="pop  alert" id="p_passwordChange">
+		<div class="alertBox">
+			<ul class="form">
+				<li>
+					<label><span class="tag tag1 " >새 비밀번호</span></label>
+					<div class="ipt"><input type="text" id="newPassword"></div>
+				</li>
+				<li>
+					<label><span class="tag tag1 ">새 비밀번호 확인</span></label>
+					<div class="ipt"><input type="text"></div>
+				</li>
+			</ul>
+			<div class="alerFooter">
+				<button type="button" class="btn_l" onclick="popClose(this);">닫기</button>
+				<button type="button" class="btn_p" onclick="myPasswordConf(this);">저장</button>
+			</div>
+		</div>
+		<!--//popFooter-->
+	</section>
+	<!--//내 비밀번호 변경-->
+
+
+
+
+
+
+	<script src="../../static/lib/jquery/jquery.min.js"></script> 
+	<script src="../../static/lib/jquery/jquery-ui.min.js"></script> 
+	<script src="../../static/js/design.js"></script>
+	<script type="text/javascript">
+
+		/*----------empty 구분*/
+		if( $('.empty').hasClass('open')){
+			$('#search').hide();
+			$('#scenarioCon').hide();
+		}else{
+			$('#search').show();
+			$('#scenarioCon').show();
+		}
+
+		//시나리오 생성
+		function scenarioNew(){
+			$('#p_scenarioInfo').addClass('open');
+			$('#scenarioSettingName').text('시나리오 생성');
+			$('#scenarioNameIpt').focus();
+		}
+
+		/*----------시나리오 상세*/
+		//시나리오 상세 팝업 open
+		$('#scenarioList dd>a').click(function(){
+			$('#p_scenarioDetail').addClass('open');
+		});
+
+		//사용중 toggle
+		function scenarioStatusToggole(obj){
+			if( $(obj).hasClass('on')){
+				$('#scenarioStatus').text('미사용').removeClass('blue');
+			}else{
+				$('#scenarioStatus').text('사용 중').addClass('blue');
+			}
+		}
+
+		//시나리오 미리듣기
+		function preview(obj){
+			$(obj).toggleClass('puse');
+		}
+
+		//시나리오 삭제 alert open
+		function scenarioDelete(){
+			$('#p_scenarioDelteAlert').addClass('open')
+		}
+
+		//시나리오 삭제 완료
+		function saveScenarioDelete(obj){
+			$(obj).parents('.pop').removeClass('open');
+			$('#p_scenarioDetail').removeClass('open');
+			toast('시나리오가 삭제되었습니다.')
+		}
+
+		//시나리오 복사
+		function scenarioCopy(){
+			$('#p_scenarioInfo').addClass('open')
+			$('#scenarioSettingName').text('시나리오 복사');
+			$('#scenarioNameIpt').focus();
+		}
+
+		//시나리오 편집
+		function scenarioSave(){
+			location.href='scenarioEdit.html'
+		}
+
+		//시나리오 생성 및 복사 완료
+		function saveScenarioName(){
+			location.href='scenarioEdit.html'
+		}
+
+	</script>
+</body>
+</html>

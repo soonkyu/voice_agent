@@ -1,0 +1,422 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=0, user-scalable=no, target-densitydpi=medium-dpi" />
+	<meta name="format-detection" content="telephone=no,address=no,email=no">
+	<!-- 캐쉬 삭제  -->
+	<meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+	<meta http-equiv="Expires" content="-1">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<!-- 캐쉬 삭제  -->
+	<title>교육생 관리</title>
+	<!------------------------------ favicon-->
+	<link rel="apple-touch-icon" sizes="57x57" href="../../static/images/favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="../../static/images/favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="../../static/images/favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="../../static/images/favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="../../static/images/favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="../../static/images/favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="../../static/images/favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="../../static/images/favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="../../static/images/favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="../../static/images/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="../../static/images/favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="../../static/images/favicon/favicon-16x16.png">
+	<link rel="manifest" href="/manifest.json">
+	<meta name="msapplication-TileColor" content="#ffffff">
+	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+	<meta name="theme-color" content="#ffffff">
+
+	<!------------------------------ css-->
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+	<link rel="stylesheet" href="../../static/css/common.css"/>
+	<link rel="stylesheet" href="../../static/css/pages.css"/>
+</head>
+<body>
+	<div class="wrap">
+		<div class="menu bg-line30">
+			<div class="menuCon">
+				<i class="logo"></i>
+				<div class="profile">
+					<div class="profileBox">
+						<div class="profileImg"></div>
+						<div class="profileEdit"><a href="javascript:;" onclick="my();">홍길동<i class="ico-arw-line wh"></i></a></div>
+					</div>
+				</div>
+				<ul class="nav">
+					<li><a href="javascript:;" onclick="script();"><span>스크립트 관리</span></a></li>
+					<li><a href="javascript:;" onclick="scenario();"><span>시나리오 관리</span></a></li>
+					<li><a href="javascript:;" onclick="student();" class="on"><span>교육생 관리</span></a></li>
+					<li><a href="javascript:;" onclick="user();"><span>사용자 관리</span></a></li>
+				</ul>
+			</div>
+			<button type="button" class="logout" onclick="logout();"><i class="ico-logout i20"></i>로그아웃</button>
+		</div>
+		<!--//menu-->
+		<div class="content ">
+			<div class="pageHd"><h1>교육생 관리</h1></div>
+			<div class="schArea">
+				<div>
+					<ul class="chkArea">
+						<li class="chk">
+							<input type="checkbox" id="userY" name="userStatus" checked="">
+							<label for="userY">
+								<span class="chkShape"></span>
+								<span class="chkTxt">사용 중</span>
+							</label>
+						</li>
+						<li class="chk">
+							<input type="checkbox" id="userN" name="userStatus" checked="">
+							<label for="userN">
+								<span class="chkShape"></span>
+								<span class="chkTxt">미사용</span>
+							</label>
+						</li>
+					</ul>
+					<div class=" iptSch">
+						<input type="text" placeholder="키워드 입력">
+						<button type="button"><i class="ico-search"></i></button>
+					</div>
+				</div>
+				<ul class="chkArea">
+					<li class="chk">
+						<input type="checkbox" id="userNeed" >
+						<label for="userNeed">
+							<span class="chkShape"></span>
+							<span class="chkTxt">가입 승인 미처리건</span>
+						</label>
+					</li>
+				</ul>
+			</div>
+			<!--//schArea-->
+			<div class="tbl">
+				<div class="tblHd">
+					<table>
+						<colgroup>
+							<col width="56"> <!--No-->
+							<col width="140"> <!--가입일시-->
+							<col width="150"> <!--승인일시-->
+							<col width="90"> <!--이름-->
+							<col width="140"> <!--연락처-->
+							<col width="180"> <!--접속 로그-->
+							<col width="*"> <!--교육 현황-->
+							<col width="140"> <!--사용자 삭제-->
+							<col width="140"> <!--비번 초기화-->
+							<col width="150"> <!--사용여부-->
+						</colgroup>
+						<tr>
+							<th class="txtC">No</th>
+							<th>가입일시</th>
+							<th>승인일시</th>
+							<th>이름</th>
+							<th>연락처</th>
+							<th>접속 로그</th>
+							<th>교육 현황</th>
+							<th></th>
+							<th></th>
+							<th class="txtC">사용여부</th>
+						</tr>
+					</table>
+				</div>
+				<!--//tblHd-->
+				<div class="tblBody">
+					<table>
+						<colgroup>
+							<col width="56"> <!--No-->
+							<col width="140"> <!--가입일시-->
+							<col width="150"> <!--승인일시-->
+							<col width="90"> <!--이름-->
+							<col width="140"> <!--연락처-->
+							<col width="180"> <!--접속 로그-->
+							<col width="*"> <!--교육 현황-->
+							<col width="140"> <!--사용자 삭제-->
+							<col width="140"> <!--비번 초기화-->
+							<col width="150"> <!--사용여부-->
+						</colgroup>
+						<tr>
+							<td class="txtC">3</td>
+							<td>2024.03.18 10:15</td>
+							<td>2024.03.18 10:15</td>
+							<td>홍길동</td>
+							<td>010-4565-4598</td>
+							<td><a href="javascript:;" class="aLink" onclick="loginLog();">2024.03.18 10:15 최종</a></td>
+							<td>
+								10% <span class="progressbar"><span></span></span>
+							</td>
+							<td>
+								<div class="justiC"><button type="button" class="btn_l" onclick="studentDelete(this);">교육생 삭제</button></div>
+							</td>
+							<td>
+								<div class="justiC"><button type="button" class="btn_l" onclick="passwordReset();">비번 초기화</button></div>
+							</td>
+							<td>
+								<div class="justiC">
+									<button type="button" class="toggle">
+										<span class="toggleBar"><span></span></span>
+									</button>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="txtC">3</td>
+							<td>2024.03.18 10:15</td>
+							<td>
+								<div class="btnArea justiC" id="approvalResulte">
+									<button type="button" class="btn_l" onclick="studentRefusel(this);">거절</button>
+									<button type="button" class="btn_green02" onclick="studentApproval(this);">승인</button>
+								</div>
+							</td>
+							<td>홍길동</td>
+							<td>010-4565-4598</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</table>
+				</div>	
+				<!--//tblBody-->
+			</div>
+			<!--//tbl-->
+			<div class="paging">
+				<button type="button" class="prev max" disabled></button>
+				<button type="button" class="prev" disabled></button>
+				<ul>
+					<li><button type="button" class="on">1</button></li>
+					<li><button type="button">2</button></li>
+				</ul>
+				<button type="button" class="next"></button>
+				<button type="button" class="next max"></button>
+			</div>
+			<!--//paging-->
+		</div>
+		<!--//content-->
+	</div>
+	<!--//wrap-->
+
+	<section class="pop alert err " id="p_studentDeleteeAlert">
+		<div class="alertBox">
+			<div class="alertIcon"><i></i></div>
+			<div class="alertTxt">
+				<p class="alertTitle">‘홍길동’ 교육생을<br><strong class="ftWhite">삭제 </strong>하시겠습니까?</p>
+				<p class="alertSub">교육생에 대한 정보가 모두 사라집니다.</p>
+			</div>
+			<div class="alerFooter">
+				<button type="button" class="btn_l" onclick="popClose(this);">닫 기</button>
+				<button type="button" class="btn_p" onclick="saveStudentDelete(this);">삭 제</button>
+			</div>
+		</div>
+	</section>
+	<!--//교육생 삭제 alert-->
+
+	<section class="pop alert password" id="p_passwordReset">
+		<div class="alertBox">
+			<div class="alertIcon"><i></i></div>
+			<div class="alertTxt">
+				<p class="alertTitle">‘홍길동’ 교육생의<br><strong class="ftWhite">비밀번호를 </strong>초기화 하시겠습니까?</p>
+				<p class="alertSub">초기 비밀번호는 핸드폰번호 뒤 4자리 입니다.</p>
+			</div>
+			<div class="alerFooter">
+				<button type="button" class="btn_l" onclick="popClose(this);">닫 기</button>
+				<button type="button" class="btn_p" onclick="savePasswordReset(this);">초기화</button>
+			</div>
+		</div>
+	</section>
+	<!--//비밀번호 초기화 alert-->
+
+	<section class="pop alert err " id="p_studentRefusel">
+		<div class="alertBox">
+			<div class="alertIcon"><i></i></div>
+			<div class="alertTxt">
+				<p class="alertTitle">교육생 승인을<br><strong class="ftWhite">거절 </strong>하시겠습니까?</p>
+			</div>
+			<ul class="form m-t20">
+				<li>
+					<label><span class="tag tag1 ">거절 사유</span></label>
+					<div class="ipt" style="width: 500px;height: 120px;">
+						<textarea id="refuselReson" placeholder="거절 사유를 입력해 주세요."></textarea>
+					</div>
+				</li>
+			</ul>
+			<div class="alerFooter">
+				<button type="button" class="btn_l" onclick="popClose(this);">닫 기</button>
+				<button type="button" class="btn_p" onclick="saveStudentRefusel(this);">거 절</button>
+			</div>
+		</div>
+	</section>
+	<!--//신규 교육생 거절 alert-->
+
+	<section class="pop" id="p_logDetail">
+		<div class="popBox bg-white">
+			<div class="popHd">
+				<h2>접속 로그</h2>
+				<a href="javascript:;" class="popClose" onclick="popClose(this);"></a>
+			</div>
+			<div class="popCon">
+				<div class="tbl" style=" width: 340px;">
+					<div class="tblHd">
+						<table>
+							<colgroup>
+								<col width="56"> <!--No-->
+								<col width="*"> <!--접속일시--> 
+							</colgroup>
+							<tr>
+								<th class="txtC">No</th>
+								<th>접속일시</th>
+							</tr>
+						</table>
+					</div>
+					<!--//tblHd-->
+					<div class="tblBody">
+						<table>
+							<colgroup>
+								<col width="56"> <!--No-->
+								<col width="*"> <!--접속일시-->
+							</colgroup>
+							<tr>
+								<td class="txtC">2</td>
+								<td>2024.03.18 10:15</td>	
+							</tr>
+							<tr>
+								<td class="txtC">1</td>
+								<td>2024.03.18 10:15</td>	
+							</tr>
+						</table>
+					</div>	
+					<!--//tblBody-->
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--접속 로그 상세-->
+
+	<section class="pop " id="p_my">
+		<div class="popBox" style="width:600px;">
+			<div class="popHd">
+				<h2>내 정보</h2>
+				<a href="javascript:;" class="popClose" onclick="popClose(this);"></a>
+			</div>
+			<!--//popHd-->
+			<div class="popCon m-b20">
+				<ul class="form">
+					<li>
+						<label><span class="tag tag1 ">회사명</span></label>
+						<div class="ipt">
+							<input type="text" value="한일네트웍스" disabled="">
+						</div>
+					</li>
+					<li>
+						<label><span class="tag tag1 ">소속</span></label>
+						<div class="ipt">
+							<input type="text" value="FS사업팀" disabled="">
+						</div>
+					</li><li>
+						<label><span class="tag tag1 ">이름</span></label>
+						<div class="ipt">
+							<input type="text" value="홍길동">
+						</div>
+					</li><li>
+						<label><span class="tag tag1 ">연락처</span></label>
+						<div class="ipt">
+							<input type="text" value="010-4565-4565">
+						</div>
+					</li>
+				</ul>
+				<!--//form-->
+			</div>
+			<!--//popCon-->
+			<div class="popFooter">
+				<button type="button" class="btn_l" onclick="myPassword(this);">비밀번호 변경</button><div class="btnArea">
+					<button type="button" class="btn_p" onclick="myInfoSave(this);">저장</button>
+				</div>
+			</div>
+			<!--//popFooter-->
+		</div>
+	</section>
+	<!--//내 정보-->
+
+	<section class="pop alert" id="p_passwordChange">
+		<div class="alertBox">
+			<ul class="form">
+				<li>
+					<label><span class="tag tag1 " >새 비밀번호</span></label>
+					<div class="ipt"><input type="text" id="newPassword"></div>
+				</li>
+				<li>
+					<label><span class="tag tag1 ">새 비밀번호 확인</span></label>
+					<div class="ipt"><input type="text"></div>
+				</li>
+			</ul>
+			<div class="alerFooter">
+				<button type="button" class="btn_l" onclick="popClose(this);">닫기</button>
+				<button type="button" class="btn_p" onclick="myPasswordConf(this);">저장</button>
+			</div>
+		</div>
+		<!--//popFooter-->
+	</section>
+	<!--//내 비밀번호 변경-->
+
+
+	<script src="../../static/lib/jquery/jquery.min.js"></script> 
+	<script src="../../static/lib/jquery/jquery-ui.min.js"></script> 
+	<script src="../../static/js/design.js"></script>
+	<script type="text/javascript">
+
+		/*----------신규 교육생*/
+		//승인 완료
+		function studentApproval(obj){
+			$(obj).parents('#approvalResulte').replaceWith('2024.03.18 12:15');
+			toast('가입 승인이 완료되었습니다.')
+		}
+
+		//거절 팝업 open
+		function studentRefusel(obj){
+			$('#p_studentRefusel').addClass('open');
+			$('#refuselReson').focus();
+		}
+
+		//거절 완료
+		function saveStudentRefusel(obj){
+			$(obj).parents('.pop').removeClass('open');
+			toast('가입이 거절되었습니다.')
+		}
+
+		/*----------교육생 삭제 */
+		//교육생 삭제 팝업 open
+		function studentDelete(){
+			$('#p_studentDeleteeAlert').addClass('open');
+		}
+
+		//교육색 삭제 완료
+		function saveStudentDelete(obj){
+			$(obj).parents('.pop').removeClass('open');
+			toast('교육생이 삭제되었습니다.')
+		}
+
+		/*----------비밀번호 초기화*/
+		//비밀번호 초기화 팝업 open
+		function passwordReset(){
+			$('#p_passwordReset').addClass('open');
+		}
+		//비밀번호 초기화 완료
+		function savePasswordReset(obj){
+			$(obj).parents('.pop').removeClass('open');
+			toast('비밀번호 초기화가 완료되었습니다.')
+		}
+
+		/*----------접속 로그*/
+		//접속 로그 팝업 open
+		function loginLog(){
+			$('#p_logDetail').addClass('open')
+		}
+
+
+	</script>
+</body>
+</html>

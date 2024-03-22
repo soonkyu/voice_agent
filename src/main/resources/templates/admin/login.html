@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=0, user-scalable=no, target-densitydpi=medium-dpi" />
+	<meta name="format-detection" content="telephone=no,address=no,email=no">
+	<!-- 캐쉬 삭제  -->
+	<meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+	<meta http-equiv="Expires" content="-1">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<!-- 캐쉬 삭제  -->
+	<title>VOICE AGENT / 로그인</title>
+	<!-------- css -->
+	<link rel="stylesheet" th:href="@{/css/common.css}"/>
+	<link rel="stylesheet" th:href="@{/css/page.css}"/>
+</head>
+<body onload="noBack();">
+	<form action="/loginProcessing" method="post">
+		<div class="wrap_app login">
+			<div class="login_visual">
+				<div class="login_img" ><img src="../../images/ico/login_visual.png"></div>
+				<div class="login_info">
+					<p class="login_title"><img src="../../images/ico/login_title.png"></p>
+					<span class="beta">BETA</span>
+				</div>
+			</div>
+			<div class="login_form">
+				<ul class="ipt_list m-tAuto">
+					<li class="ipt">
+						<label>핸드폰 번호</label>
+						<input type="text" placeholder="숫자만 입력" id="login_id" maxlength="13" name="username">
+						<p class="helper"></p>
+					</li>
+					<li class="ipt">
+						<label>비밀번호</label>
+						<input type="password" placeholder="숫자 4자리 입력 " maxlength="5" id="login_pw" name="password" autocomplete="on">
+						<p class="helper"></p>
+					</li>
+				</ul>
+				<button type="submit" class="btn_p" id="login_btn" disabled>로그인</button>
+				<button type="button" class="btn_link m-t16" id="signup_page_btn">회원가입</button>
+			</div>
+			<!--//login_form-->
+		</div>
+		<!--//wrap_app-->
+	</form>
+
+
+	<script th:src="@{/js/jquery-3.6.0.js}"></script>
+	<script>
+
+		window.history.forward();
+
+		const error_msg = '[[${msg}]]';
+
+		if(error_msg != ""){
+			alert(error_msg);
+			location.href="/login";
+		}
+
+		//핸드폰번호 하이픈
+		function autoHypenPhone(str){
+			str = str.replace(/[^0-9]/g, '');
+			var tmp = '';
+			if( str.length < 4){
+				return str;
+			}else if(str.length < 7){
+				tmp += str.substr(0, 3);
+				tmp += '-';
+				tmp += str.substr(3);
+				return tmp;
+			}else if(str.length < 11){
+				tmp += str.substr(0, 3);
+				tmp += '-';
+				tmp += str.substr(3, 3);
+				tmp += '-';
+				tmp += str.substr(6);
+				return tmp;
+			}else{              
+				tmp += str.substr(0, 3);
+				tmp += '-';
+				tmp += str.substr(3, 4);
+				tmp += '-';
+				tmp += str.substr(7);
+				return tmp;
+			}
+			return str;
+		}
+
+		var cellPhone = document.getElementById('login_id');
+		cellPhone.addEventListener('input', function(event){
+			event = event || window.event;
+			var _val = this.value.trim();
+			this.value = autoHypenPhone(_val) ;
+
+			//11자리 입력 후 비밀번호 autofocus
+			//[문제] 11자리 이후 비밀번호로 포커스 가야하는데, 11자리 입력 전 포커스로감
+			var length = this.value.length;
+			if( length === 13 ){
+				$('#login_pw').focus();
+			}
+		});
+
+		//비밀번호 보기, 안보기
+		const password = document.getElementById('login_pw');
+		const toggle = document.getElementById('toggle');
+
+		function showHide() {
+			if (password.type === 'password') {
+				password.setAttribute('type', 'text');
+				toggle.classList.add('hide')
+			} else {
+				password.setAttribute('type', 'password');
+				toggle.classList.remove('hide')
+			}
+
+		}
+
+		document.getElementById('login_pw').addEventListener('input',function(){
+			if($(this).val().length==4){
+				$("#login_btn").removeAttr("disabled");
+				$('#login_btn').focus();
+				};
+			}
+		);
+
+		$("#signup_page_btn").click(function(){
+
+			location.href= "/signup";
+		});
+		
+
+		function noBack(){
+			window.history.forward();
+		}
+
+
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section class="page pages_script" id="page_script">
+    <th:block th:if="${script != null}">
+        <!--  pages_script addClass( 최초: '', 연습중:'call', 진행중/완료:'finish', 녹취듣기:'record call')-->
+        <div class="page_hd line">
+            <span class="page_title" th:text="${script.script}">스크립트 제목여기에</span>
+            <a href="javascript:;" class="page_close"><i class="ico_close"></i></a>
+        </div>
+        <!--//page_hd-->
+        <div class="page_con" th:data-script-idx="${script.idx}">
+            <div class="script_con">
+                <ul>
+                    <li th:each="data,stat: ${script.list}" th:class="${#strings.equals('person',data.type) ? 'me' : ''}" th:data-onset="${data.onset}">
+                        <p th:text="${#strings.equals('person',data.type) ? '상담사' : '고객'}">상담사</p>
+                        <th:block th:if="${#strings.equals('person',data.type)}">
+                            <audio th:id="|audio-${data.sort}|" th:unless="${#strings.isEmpty(script.list[stat.index].wavByScript)}">
+                                <source th:src="|http://112.217.204.155:8080/hanil/ubase${script.list[stat.index].wavByScript}|">
+                            </audio>
+                        </th:block>
+                        <div  th:classappend="${#strings.equals('person',data.type) ? 'ex' : 'sentence'}" th:style="${#strings.isEmpty(data.timelineText) ? 'white-space : pre-line;'
+							 : ''}"
+                              th:utext="${#strings.isEmpty(data.timelineText) ? data.txtByScript : data.timelineText}">안녕하세요. 상담사입니다.
+                        </div>
+                        <th:block th:if="${#strings.equals('person',data.type) and !(#strings.isEmpty(data.txtByPerson))} ">
+                            <div class="cmt sentence" th:utext="${data.txtByPerson}">"안녕하세요. 상담사 홍길동입니다."</div>
+                            <div class="score">발화점수 : <strong th:text="|${data.score}점|"> 50점</strong></div>
+                        </th:block>
+                    </li>
+                </ul>
+            </div>
+            <!--//script_con-->
+        </div>
+        <!--//page_con-->
+        <div class="page_btn">
+            <button type="button" class="btn_p btn_practice" onclick="btn_practice();">연습하기</button>
+            <button type="button" class="btn_p btn_record" onclick="btn_record();">녹취 듣기</button>
+        </div>
+        <!--//page_btn-->
+        <div class="record_cntl" style="display: none;">
+            <div id="song" th:if="${!#strings.isEmpty(wav)}" class="record_hear" >
+                <audio id="audio-player" controls="" >
+                    <source th:src="|http://112.217.204.155:8080/hanil/ubase/history${wav}|">
+                </audio>
+            </div>
+            <button type="button" class="btn_line" onclick="record_close();">종 료</button>
+        </div>
+        <div class="practice_cntl" style="display: none;">
+            <button type="button" class="btn_line" id="practice_stop_btn">종 료</button>
+        </div>
+        <!--//record_cntl -->
+    </th:block>
+</section>
+</html>

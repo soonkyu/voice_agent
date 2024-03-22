@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=0, user-scalable=no, target-densitydpi=medium-dpi" />
+	<meta name="format-detection" content="telephone=no,address=no,email=no">
+	<!-- 캐쉬 삭제  -->
+	<meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+	<meta http-equiv="Expires" content="-1">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<!-- 캐쉬 삭제  -->
+	<title>VOICE AGENT / 회원가입</title>
+	<!-------- css -->
+	<link rel="stylesheet" th:href="@{/css/common.css}"/>
+	<link rel="stylesheet" th:href="@{/css/page.css}"/>
+</head>
+<body>
+	<form action="/signup" method="post" id="signup_form">
+		<div class="wrap_app login">
+			<div class="login_visual">
+				<div class="login_img"><img src="../../images/ico/login_visual.png"></div>
+				<div class="login_info">
+					<p class="login_title" style="font-size: 24px;">회 원 가 입</p>
+				</div>
+			</div>
+			<div class="login_form">
+				<ul class="ipt_list m-tAuto">
+					<li class="ipt">
+						<label>핸드폰 번호</label>
+						<input type="text" placeholder="숫자만 입력" id="user_id" maxlength="13" name="username">
+						<p class="helper"></p>
+					</li>
+					<li class="ipt">
+						<label>새 비밀번호</label>
+						<input type="password" placeholder="숫자 4자리 입력 " maxlength="5" id="new_password" name="password" autocomplete="off">
+						<p class="helper"></p>
+					</li>
+					<li class="ipt">
+						<label>비밀번호 확인</label>
+						<input type="password" placeholder="숫자 4자리 입력 " maxlength="5" id="confirm_password" autocomplete="off">
+						<p class="helper"></p>
+					</li>
+				</ul>
+				<button type="submit" class="btn_p" id="signup_btn" disabled>회원가입</button>
+			</div>
+			<!--//login_form-->
+		</div>
+		<!--//wrap_app-->
+	</form>
+
+
+	<script th:src="@{/js/jquery-3.6.0.js}"></script>
+	<script>
+		window.history.forward();
+
+		const error_msg = '[[${msg}]]';
+
+		if(error_msg != ""){
+			alert(error_msg);
+			location.href="/login";
+		}
+
+		//핸드폰번호 하이픈
+		function autoHypenPhone(str){
+			str = str.replace(/[^0-9]/g, '');
+			var tmp = '';
+			if( str.length < 4){
+				return str;
+			}else if(str.length < 7){
+				tmp += str.substr(0, 3);
+				tmp += '-';
+				tmp += str.substr(3);
+				return tmp;
+			}else if(str.length < 11){
+				tmp += str.substr(0, 3);
+				tmp += '-';
+				tmp += str.substr(3, 3);
+				tmp += '-';
+				tmp += str.substr(6);
+				return tmp;
+			}else{              
+				tmp += str.substr(0, 3);
+				tmp += '-';
+				tmp += str.substr(3, 4);
+				tmp += '-';
+				tmp += str.substr(7);
+				return tmp;
+			}
+			return str;
+		}
+
+		document.getElementById('user_id').addEventListener("input",function(event){
+
+			const _val = this.value.trim();
+			this.value = autoHypenPhone(_val) ;
+
+			//11자리 입력 후 비밀번호 autofocus
+			//[문제] 11자리 이후 비밀번호로 포커스 가야하는데, 11자리 입력 전 포커스로감
+			const length = this.value.length;
+			if( length === 13 ){
+				$('#new_password').focus();
+			} else {
+				$("#signup_btn").attr("disabled","disabled");
+				$("#confirm_password").val("");
+				$("#new_password").val("");
+			}
+		});
+
+		document.getElementById("new_password").addEventListener('input',function(e){
+			const user_id = document.getElementById("user_id");
+
+			if(user_id.value.length < 13){
+				alert("핸드폰 번호를 입력해주세요.");
+				user_id.focus();
+				this.value="";
+				return;
+			}
+
+			const onlyNumber = /[^0-9]/g;
+
+			if(onlyNumber.test(this.value)){
+				alert("숫자만 입력가능합니다.");
+				this.value = this.value.replace(onlyNumber,"");
+			}
+
+			if(this.value.length == 4){
+				document.getElementById("confirm_password").focus();
+
+			} else {
+				$("#signup_btn").attr("disabled","disabled");
+				$("#confirm_password").val("");
+			}
+
+		});
+
+
+
+
+		document.getElementById("confirm_password").addEventListener('input',function(e){
+
+			if($(this).val().length == 4){
+				if($("#new_password").val() == $(this).val()){
+					$("#signup_btn").removeAttr("disabled");
+					$("#signup_btn").focus();
+				} else {
+					alert("비밀번호가 일치하지 않습니다.");
+					$("#confirm_password").val("");
+					$("#signup_btn").attr("disabled","disabled");
+					return;
+				}
+			} else {
+				$("#signup_btn").attr("disabled","disabled");
+			}
+		});
+
+		$("#signup_form").submit(function(){
+
+			let is_not_duplicate_user = true;
+
+
+			if($("#user_id").val() == "") {
+				alert("핸드폰번호를 입력해주세요.");
+				return;
+			}
+
+			if($("#new_password").val() == "") {
+				alert("비밀번호를 입력해주세요.");
+				return;
+			}
+
+			$.ajax({
+				url: '/checkUserId',
+				type: "POST",
+				async: false,
+				data: {"userId" : $("#user_id").val()}
+			}).done(function(data, textStatus, xhr){
+				if(!data){
+					alert("아이디가 존재합니다.");
+					is_not_duplicate_user =false;
+					$("#user_id").val("").focus();
+					$("#new_password").val("");
+					$("#confirm_password").val("");
+					$("#signup_btn").attr("disabled","disabled");
+				}
+			}).fail(function(result){
+				console.log(result);
+			})
+
+			return is_not_duplicate_user;
+
+
+		});
+
+
+	</script>
+</body>
+</html>

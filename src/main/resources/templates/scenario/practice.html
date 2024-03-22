@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section class="page pages_script open" id="page_script">
+    <!--  pages_script addClass( 최초: '', 연습중:'call', 진행중/완료:'finish', 녹취듣기:'record call')-->
+    <div class="page_hd line">
+        <span class="page_title" th:text="${scenario.scenarioTitle}">스크립트 제목여기에</span>
+        <a href="javascript:practice_page_close();" class="page_close"><i class="ico_close"></i></a>
+    </div>
+    <!--//page_hd-->
+    <div class="page_con" th:data-script-idx="${scenario.scenarioIdx}">
+        <div class="script_con">
+            <ul>
+                <li th:each="data,stat: ${scenario.scenarioDetails}" th:class="${#strings.equals('person',data.type) ? 'me' : ''}">
+                    <p th:text="${#strings.equals('person',data.type) ? '상담사' : '고객'}">상담사</p>
+                    <th:block th:if="${#strings.equals('person',data.type) && data.wav != null}">
+                        <audio th:id="|audio-${data.seq}|">
+                            <source th:src="|http://112.217.204.155:8080/hanil/voice_agent${data.wav}|">
+                        </audio>
+                    </th:block>
+                    <div  th:classappend="${#strings.equals('person',data.type) ? 'ex' : 'sentence'}" th:style="${#strings.isEmpty(data.timelineText) ? 'white-space : pre-line;'
+                         : ''}"
+                          th:utext="${#strings.isEmpty(data.timelineText) ? data.contents : data.timelineText}">안녕하세요. 상담사입니다.
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!--//script_con-->
+    </div>
+    <!--//page_con-->
+    <div class="page_btn">
+        <button type="button" class="btn_p btn_practice" onclick="btn_practice();">연습하기</button>
+    </div>
+    <!--//page_btn-->
+    <div class="practice_cntl" style="display: none;">
+        <button type="button" class="btn_line" id="practice_stop_btn">종 료</button>
+    </div>
+
+    <!--발신팝업    -->
+    <section class="pop " id="p_balsin">
+        <div class="pop_box">
+            <div class="pop_con align_c">
+                <p class="balsin_sec m-b40"><span id="balsin_sec">5초</span> 후 상담이 시작됩니다.</p>
+                <div class="balsin_script m-b20">
+                    <strong>스크립트 제목은 여기에</strong><br>로 상담 연습이 진행됩니다.
+                </div>
+                <!--				<div class="balsin_num">-->
+                <!--					<label class="label m-b8">발신번호</label>-->
+                <!--					<p>070-4335-4615</p>-->
+                <!--				</div>-->
+            </div>
+            <!--//pop_con-->
+            <div class="pop_btn_area">
+                <button type="button" class="btn_p" onclick="call();">확 인</button>
+            </div>
+        </div>
+        <!--//pop_box-->
+    </section>
+    <!--//발신팝업 -->
+
+    <!--봇 시작 버튼 -->
+    <div class="pop" id="call_start_btn_box">
+        <button type="button" class="btn_p ft_20" style="height:128px;" id="call_start_btn"><i class="ico_play wh m-r8 i16"></i>연습 시작하기</button>
+    </div>
+    <!--//봇 시작 버튼 -->
+
+    <div id="fade" class="black_background"></div>
+    <div id="light" class="alert">
+        <p class="alert_txt">스크립트가 종료되었습니다. <br>잠시만 기다려주세요.</p>
+        <div class="loading_transfer">
+            <div>
+				<span class="loading_transfer_bar">
+					<span></span>
+				</span>
+                <span class="loading_transfer_txt">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script>
+    <script>
+        $(function(){
+            const onScreen_height = document.querySelector(".page_con").getBoundingClientRect().bottom;
+
+            $("#page_script li.me").each(function(a,b){
+
+                const agent_div = $("div:first",b);
+                //데이터 저장
+                const timeline_txt = agent_div.text();
+                let timeline_txt_json_list;
+                //비우기
+                let ele='';
+                $(agent_div).empty();
+                if(timeline_txt.indexOf('{') == -1){
+                    $(agent_div).append(timeline_txt);
+                } else {
+                    timeline_txt_json_list = JSON.parse(timeline_txt.replace(/\'/gi,'"'));
+                    for (let i = 0; i < timeline_txt_json_list.length; i++) {
+
+                        const timeline_txt_json = timeline_txt_json_list[i];
+                        if(timeline_txt_json['newLine'] === 'true'){
+                            ele = document.createElement("br");
+                        } else {
+                            ele = document.createElement('span');
+                            ele.innerHTML = timeline_txt_json.text;
+                        }
+                        ele.setAttribute("id","c_"+ i);
+                        ele.classList.add("karaoke");
+                        $(agent_div).append(ele);
+
+                    }
+
+                    $("span", agent_div).append("\u00a0");
+                }
+
+                const audioPlayer = $("audio",this)[0];
+                if(audioPlayer){
+                    audioPlayer.addEventListener("timeupdate",function(e){
+
+                        timeline_txt_json_list.forEach(function(ele, idx, array){
+
+                            if(audioPlayer.currentTime >= ele.startTime && ele.newLine === 'false' ){
+                                if( onScreen_height - 100 - $(".practice_cntl")[0].getBoundingClientRect().height < $(".karaoke",agent_div)[idx].getBoundingClientRect().top){
+                                    $(".page_con").animate({scrollTop : $(".page_con").scrollTop() + onScreen_height - 200}, 500);
+                                }
+                                $(".karaoke",agent_div)[idx].classList.add("blue");
+                                return false;
+                            }
+                        })
+                    });
+                }
+            });
+
+            stomp_connect();
+
+        });
+
+        $("#call_start_btn").click(function(){
+            // api 호출 보내기.
+            $.ajax({url : "http://112.217.204.155:6783/start_button",data : {"room_id" : roomId},method : "POST"})
+                .done(function(result){
+                    console.log(result);
+                    $("#call_start_btn_box").removeClass("open");
+                    $("#page_script").addClass("practice");
+                })
+                .fail(function(result){
+                    console.log(result);
+                    window.location.reload();
+                });
+        })
+
+        $("#practice_stop_btn").click(function(){
+
+            $.ajax({url : "http://112.217.204.155:6783/stop_button",data : {"room_id" : roomId},method : "POST"})
+                .done(function(result){
+                    console.log(result);
+                })
+                .fail(function(result){
+                    console.log(result);
+                    // window.location.reload();
+                });
+        });
+
+        //발신번호 확인 팝업
+        function btn_practice(){
+
+            $("#p_balsin .balsin_script > strong").text('[[${scenario.scenarioTitle}]]');
+            $('#p_balsin').addClass('open');
+            $('.wrap_app').addClass('scroll_n');
+            var timer = 5;
+            //초 카운트
+            interval = setInterval(function() {
+                timer--;
+                $('#balsin_sec').text(timer+'초');
+                //5초 후
+                if (timer === 0){
+                    clearInterval(interval); //0초까지만
+                    pop_close(); //팝업 종료
+                    call(); //화면:통화중
+                    $('#balsin_sec').text('5초');
+                    $(".page_con")[0].scrollTo(0,0);
+                };
+            }, 1000);
+
+        }
+
+        //통화중 (연습화면)
+        function call(){
+            if(interval){
+                clearInterval(interval);
+            }
+            $('.pages_script').addClass('call'); //연습화면
+
+            pop_close(); //팝업 종료
+            //아웃바운드 콜 신호 보내기
+            $.ajax(
+                {
+                    url: 'http://112.217.204.155:6783/outbound_call', // 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
+                    data: { "phone_number": phone_number, "scenario_idx" : $("#page_script > .page_con").data("script-idx"), "room_id" : roomId },  // HTTP 요청과 함께 서버로 보낼 데이터
+                    method: "POST",   // HTTP 요청 메소드(GET, POST 등)
+                    timeout : 3000,
+                    async : false
+                }
+            ).done(function(response) { // HTTP 요청이 성공하면 요청한 데이터가 done() 메소드로 전달됨.
+                    if(JSON.parse(response).result =="SUCCESS") {
+                        $("#call_start_btn_box").addClass("open");
+                    }
+                }
+            ).fail(function(jqXHR, status, errorThrown) { // HTTP 요청이 실패하면 오류와 상태에 관한 정보가 fail() 메소드로 전달됨.
+
+                // Our error logic here
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'No connection. Verify Network.';
+                    //ERR_CONNECTION_REFUSED hits this one
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (status === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (status === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (status === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + JSON.parse(jqXHR.responseText).result
+                }
+
+                alert(msg);
+                window.location.reload();
+            })
+        }
+
+
+        function stomp_connect(){
+
+            sockJs = new SockJS("/ws");
+            stomp = Stomp.over(sockJs);
+
+            //개발자 도구 프레임 안보이게 하기
+            // stomp.debug= null;
+            stomp.connect({}, function (frame){
+                console.log("STOMP Connection");
+                roomId = frame.headers['user-name'];
+                localStorage.call_end =false;
+                //4. subscribe(path, callback)으로 메세지를 받을 수 있음
+                stomp.subscribe("/sub/ws/" + frame.headers['user-name'], function (message) {
+
+                    const data = JSON.parse(message.body);
+                    const audioPlayer = document.getElementById("audio-"+data.seq);
+
+                    if(data.seq == 0){
+                        localStorage.call_end = true;
+                        if(data.stt_task == null){
+                            showLayer();
+                        } else {
+                            $(".loading_transfer_txt").text(data.stt_task + "%");
+                            $(".loading_transfer_bar span").css("width", data.stt_task+ "%");
+                            if(data.stt_task == 100 ){
+                                $("#light > .alert_txt").html("<p>정상적으로 저장되었습니다.<br>첫 페이지로 이동합니다.</p>");
+                            }
+                            return;
+                        }
+                    }
+
+                    if(data.seq == -1 && localStorage.call_end){
+                        hideLayer();
+                        stomp_disconnect();
+                        const script_idx = $("#page_script > .page_con").data("script-idx");
+                        localStorage.click_idx = script_idx;
+                        window.location.reload();
+                    }
+
+                    if(data.seq == -2){
+                        alert("상담 통화를 종료하셨습니다.");
+                        stomp_disconnect();
+                        window.location.reload();
+                    }
+
+                    if(audioPlayer){
+                        $(".page_con").animate({scrollTop: audioPlayer.nextElementSibling.offsetTop-70});
+                        audioPlayer.muted =true;
+                        $(audioPlayer).parent().addClass("ready");
+
+                        if(data.play_stat == 1 ){
+                            console.log(data.play_stat);
+                            audioPlayer.play();
+                        } else if(data.play_stat == 0) {
+                            console.log(data.play_stat);
+                            audioPlayer.pause();
+                        }
+                    } else {
+                        //오디오 데이터가 없으면, 없애기
+                        console.log("오디오 데이터가 없습니다.");
+                    }
+                });
+
+            });
+        }
+
+        function stomp_disconnect(){
+            stomp.disconnect();
+        }
+
+
+        function practice_page_close(){
+
+            $(".wrap_app").removeClass('scroll_n');
+            if(stomp && stomp.connected){
+                stomp_disconnect();
+            }
+            $("#page_script").remove();
+        }
+
+
+        function wrapWindowByMask() {
+            //화면의 높이와 너비를 구한다.
+            var maskHeight = $(document).height();
+            var maskWidth = $(window).width();
+
+            //마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
+            $('#fade').css({ 'width': maskWidth, 'height': maskHeight });
+        }
+
+        /// 화면의 중앙에 레이어띄움
+        function showLayer() {
+            wrapWindowByMask();
+
+            $('#fade').show();
+            $('#light').show();
+
+        }
+
+        function hideLayer() {
+
+            $('#fade').hide();
+            $('#light').hide();
+
+        }
+    </script>
+</section>
+</html>

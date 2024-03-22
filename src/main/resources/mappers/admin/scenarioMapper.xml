@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hanil.edubot.module.admin.script.AdminScriptMapper">
+
+    <resultMap id="scriptResult" type="script">
+        <result property="scriptIdx" column="script_idx"/>
+        <result property="company.center.centerIdx" column="center_idx"/>
+        <result property="scriptTitle" column="script_title"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="useYn" column="use_yn"/>
+        <result property="modifyUserIdx" column="modify_use_idx"/>
+        <collection property="scriptDetails" resultMap="scriptDetailResult"/>
+    </resultMap>
+
+    <resultMap id="scriptDetailResult" type="scriptDetail">
+        <result property="scriptDetailIdx" column="script_detail_idx"/>
+        <result property="scriptCategory" column="script_category"/>
+        <result property="scriptQuestion" column="script_question"/>
+        <result property="scriptAnswer" column="script_answer"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insertScript">
+        INSERT INTO tb_script
+            (center_idx, script_title, created_at, modify_user_idx)
+        VALUES (#{company.center.centerIdx}, #{scriptTitle}, NOW(), #{modifyUserIdx})
+
+        <selectKey resultType="integer" order="AFTER" keyProperty="scriptIdx">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="insertScriptDetail">
+        INSERT INTO tb_script_detail
+        (script_idx, script_category, script_question, script_answer, created_at)
+        VALUES
+        <foreach collection="script.scriptDetails" item="item" separator=",">
+            (
+                #{script.scriptIdx},
+                #{item.scriptCategory},
+                #{item.scriptQuestion},
+                #{item.scriptAnswer},
+                NOW()
+            )
+        </foreach>
+
+    </insert>
+
+
+    <select id="selectScripts" resultMap="scriptResult">
+        SELECT idx as script_idx, center_idx, script_title, created_at, modify_user_idx
+        FROM tb_script
+        WHERE center_idx = #{centerIdx} and use_yn = 1
+        ORDER BY
+            created_at DESC
+    </select>
+
+    <select id="selectScriptDetails" resultMap="scriptResult">
+        SELECT
+            a.idx as script_idx, a.center_idx, a.script_title, a.use_yn, a.created_at,
+            b.idx as script_detail_idx,
+            b.script_category,
+            b.script_question,
+            b.script_answer,
+            b.created_at
+        FROM
+            tb_script a
+        LEFT JOIN tb_script_detail b on a.idx = b.script_idx
+        WHERE a.idx = #{scriptIdx}
+    </select>
+
+    <update id="updateScriptTitle">
+        UPDATE tb_script
+        SET
+            script_title=#{scriptTitle},
+            modify_user_idx=#{modifyUserIdx},
+            modified_at = current_timestamp()
+        WHERE idx=#{scriptIdx}
+    </update>
+
+
+    <insert id="copyScriptDetail">
+        INSERT INTO tb_script_detail
+            (script_idx, script_category,script_question,script_answer,created_at)
+        SELECT
+            #{scriptIdx},
+            script_category,
+            script_question,
+            script_answer,
+            now()
+        FROM
+            tb_script_detail
+        WHERE script_idx = #{copyScriptIdx};
+    </insert>
+
+    <delete id="deleteScriptDetailByScript">
+        DELETE FROM tb_script_detail where script_idx = #{scriptIdx}
+    </delete>
+
+
+    <delete id="deleteScript">
+        DELETE FROM tb_script WHERE idx = #{scriptIdx}
+    </delete>
+</mapper>
+
+
+

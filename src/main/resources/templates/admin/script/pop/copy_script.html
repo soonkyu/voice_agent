@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section class="pop open" id="p_scriptNameSetting">
+    <div class="popBox" style="width:600px;">
+        <div class="popHd">
+            <h2>스크립트 폴더 추가</h2>
+            <a class="popClose" href="javascript:;" onclick="popClose(this);"></a>
+        </div>
+        <!--//popHd-->
+        <div class="popCon ">
+            <ul class="form">
+                <li>
+                    <label><span class="tag tag1 red">폴더명</span></label>
+                    <div class="ipt">
+                        <form action="/admin/script/pop/add" id="add_script_form" method="post">
+                            <input name="scriptTitle" placeholder="최대 8글자" value="">
+                            <input name="company.companyIdx" th:value="${#authentication.principal.company.companyIdx}"
+                                   type="hidden">
+                        </form>
+                    </div>
+                </li>
+            </ul>
+            <!--//form-->
+        </div>
+        <!--//popCon-->
+        <div class="popFooter">
+            <span></span>
+            <button class="btn_p" onclick="saveScriptName(this);" type="button">생성하기</button>
+        </div>
+        <!--//popFooter-->
+    </div>
+    <script>
+        $(function () {
+            $("input[name='scriptTitle']").focus();
+        })
+
+        //폴더 생성 및 이름 변경 저장
+        function saveScriptName() {
+            if ($("input[name='scriptTitle']").val().trim() == '') {
+                alert("폴더 명을 적어주세요.");
+                $("input[name='scriptTitle']").focus();
+                return;
+            }
+
+            if (!confirm("저장하시겠습니까?"))
+                return;
+
+            $("#add_script_form").submit();
+
+        }
+
+        $("input[name='scriptTitle']").keyup(function () {
+            $(this).val($(this).val().replace(/.{8,}$/g, ''));
+        });
+
+
+    </script>
+</section>
+</html>

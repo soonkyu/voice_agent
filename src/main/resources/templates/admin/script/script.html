@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{/admin/layout/default_layout :: layout('scripts','스크립트 관리', ~{::#contents}, ~{::script})}">
+<body>
+	<div class="content" id="contents">
+			<div class="pageHd">
+				<h1>스크립트 관리</h1>
+			</div>
+			<!-- 스크립트 목록있을 경우 #scriptView show -->
+			<div class="con gap24" id="scriptView" th:style="${#lists.isEmpty(scripts) || scripts == null ? 'display:none;': ''}">
+				<!--groupList-->
+				<div class="flexColumn gap20" style="width:200px;">
+					<div class="flexC gap12 ft16">
+						<i class="ico-folder "></i>
+						<span class="gap4 flexC">폴더<strong id="folderCount">4</strong></span>
+					</div>
+					<ul class="tagList row flex1" id="folderList">
+						<li class="tag" th:each="script,stat : ${scripts}" th:classappend="${stat.first ? 'active' : ''}" th:data-script-idx="${script.scriptIdx}">
+							<a href="javascript:;" th:text="${script.scriptTitle}">인사</a>
+						</li>
+					</ul>
+					<div>
+						<button type="button" class="btn_p" onclick="addFolder();"><i class="ico-plus wh"></i> 신규 폴더 생성</button>
+					</div>
+				</div>
+				<!--//groupList-->
+				<!--스크립트 상세-->
+				<div class="scriptDetail flex1 flexColumn">
+					<div class="flexC gap12 m-b24">
+						<strong class="ft28 ">샘플 QA 리스트</strong>
+						<div class="po-rel">
+							<a href="javascript:;" onclick="scriptMore(this);"><i class="ico-more"></i></a>
+							<div id="m_scriptMore" class="moreList">
+								<ul  >
+									<li><a href="javascript:;" onclick="floderRename();" class="on">이름 변경</a></li>
+									<li><a href="javascript:;" onclick="floderCopy();">폴더 복사</a></li>
+									<li><a href="javascript:;" onclick="folderDelete();" class="ftRed01">폴더 삭제</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="schArea">
+						<div>
+							<div class="iptSch">
+								<input type="text" placeholder="키워드 입력">
+								<button type="button" class="p-0"><i class="ico-search"></i></button>
+							</div>
+						</div>
+						<div class="btnArea">
+							<button type="button" class="btn_l" id="trDelete" onclick="trDelete();" style="display:none;">
+								<strong id="deleteCount" class="ftRed01"></strong>삭제
+							</button>
+							<button type="button" class="btn_l" onclick="trAdd();"><i class="ico-plus"></i> 행 추가</button>
+							<button type="button" class="btn_l" onclick="upload();"><i class="ico-upload"></i>업로드</button>
+							<button type="button" class="btn_l" onclick="download();"><i class="ico-donwload"></i>다운로드</button>
+							<button type="button" class="btn_p" onclick="save();">저 장</button>
+						</div>
+					</div>
+					<!--//schArea-->
+					<div class="tbl">
+						<div class="tblHd">
+							<table>
+								<colgroup>
+									<col width="40"> <!--checkbox-->
+									<col width="150"> <!--카테고리-->
+									<col width="450"> <!--질문-->
+									<col width="*"> <!--답변-->
+								</colgroup>
+								<tr>
+									<th>
+										<div class="chk">
+											<input type="checkbox" name="tblChkAll" id="tblChkAll">
+											<label for="tblChkAll">
+												<span class="chkShape"></span>
+											</label>
+										</div>
+									</th>
+									<th>Category</th>
+									<th>Question</th>
+									<th>Answer</th>
+								</tr>
+							</table>
+						</div>
+						<!--//tblHd-->
+						<div class="tblBody" id="scriptTbl">
+							<table>
+								<colgroup>
+									<col width="40"> <!--checkbox-->
+									<col width="150"> <!--카테고리-->
+									<col width="450"> <!--질문-->
+									<col width="*"> <!--답변-->
+								</colgroup>
+								<tr>
+									<td class="top">
+										<div class="chk">
+											<input type="checkbox" name="tblChk" id="tblChk1">
+											<label for="tblChk1">
+												<span class="chkShape"></span>
+											</label>
+										</div>
+									</td>
+									<td class="top">
+										<textarea >세탁기</textarea>
+									</td>
+									<td class="top">
+										<textarea>세탁기 급수가 안되요. (IE에러가 발생되요.)</textarea>
+									</td>
+									<td class="top">
+										<textarea>단수 상태이거나 수도꼭지가 열려 있는지 확인해 보셨나요? 필터를 청소해 주시고 급수 호수가 꺾이지 않았는지 확인해 주세요.1. 수도꼭지를 잠근 후 전원코드를 빼주세요.2. 세탁기에 연결된 급수호스를 왼쪽(시계 반대 방향)으로 분리 해 주시고 그 안에 있는 필터를 롱로우즈 플라이어(펜치) 등을 이용하여 분리해 주세요.3. 급수 필터에 물때나 철 가루 등의 이물질을 흐르는 물에 칫솔 등을 이용하여 깨끗하게 청소 후 다시 넣어주세요.</textarea>
+									</td>
+								</tr>
+								<tr>
+									<td class="top">
+										<div class="chk">
+											<input type="checkbox" name="tblChk" id="tblChk2">
+											<label for="tblChk2">
+												<span class="chkShape"></span>
+											</label>
+										</div>
+									</td>
+									<td>
+										<textarea >세탁기</textarea>
+									</td>
+									<td>
+										<textarea>세탁기 급수가 안되요. (IE에러가 발생되요.)</textarea>
+									</td>
+									<td>
+										<textarea>단수 상태이거나 수도꼭지가 열려 있는지 확인해 보셨나요? 필터를 청소해 주시고 </textarea>
+									</td>
+								</tr>
+							</table>
+						</div>	
+						<!--//tblBody-->
+					</div>
+				</div>
+				<!--//스크립트 상세-->
+			</div>
+			<!--//con, 스크립트 있을 때-->
+			<!--empty-->
+			<div class="empty" th:classappend="${#lists.isEmpty(scripts) || scripts == null ? 'open' : ''}">
+				<i class="emptyIcon"></i>
+				<strong class="ft16">스크립트를 업로드해 주세요.</strong>
+				<p class="ftGray06 m-t8">스크립트 업로드 후 시나리오 생성이 가능합니다.</p>
+				<div class="btnArea m-b20">
+					<button type="button" onclick="addFolder();" class="btn_l">직접 입력</button>
+					<button type="button" onclick="excelUpload();" class="btn_p">엑셀 업로드</button>
+				</div>
+				<button type="button" class="aLink"><i class="ico-donwload"></i>양식 다운로드</button>
+				<!--엑셀 업로드일경우-->
+				<div class="fileCon m-t20" style="max-width:840px; display: none;" id="excelUpload">
+					<div class="fileView" style="display: none;">
+						<i class="i16 m-r12 icoExcel"></i>
+						<span class="m-r32" id="filename">사전_01.xlsx</span>
+						<button type="button" class="btn_l " onclick="fileChange();">변경</button>
+					</div>
+					<div class="fileWrap">
+						<span class="rec">
+							<span class="top"></span>
+							<span class="top right"></span>
+							<span class="bottom"></span>
+							<span class="bottom right"></span>
+						</span>
+						<div class="file-details"><p class="fileNm"></p></div>
+						<div class="drop-zone">
+							<div class="dashed-zone"><p class="ft16 m-b8">엑셀 파일을 끌어오거나 클릭하여 업로드하세요</p><p class="ftGray06">지원형식 <strong>xlxs, xls</strong></p></div>
+						</div>
+					</div>
+				</div>
+				<!--// 엑셀 업로드일경우-->
+			</div>
+			<!--//empty-->
+		</div>
+
+	<!--//폴더 삭제 alert -->
+	<script type="text/javascript">
+		/*----------스크립트 폴더 목록*/
+
+
+		$("#scriptView li").click(function(){
+			$("#scriptView li").removeClass("active");
+			$(this).addClass("active")
+
+			$.ajax({
+				url : "/admin/script/" + $(this).data("script-idx"),
+				method : "get"
+			}).done(function(result){
+				$("#scriptView .scriptDetail").remove();
+				$("#scriptView").append(result);
+			});
+
+		});
+
+
+		//폴더 count
+		var folderCount = $('#folderList li').length;
+		$('#folderCount').text(folderCount);
+
+		//폴더 index active
+		$('#folderList li').click(function(){
+			var idx = $('#folderList li').index($(this));
+			$('#folderList li').removeClass('active').eq(idx).addClass('active');
+		});
+
+		//폴더 추가
+		function addFolder(){
+
+			$.ajax({
+				url : "/admin/script/pop/add",
+				method : "get"
+			}).done(function(result){
+				$("body").append(result);
+			})
+		}
+		/*----------스크립트 폴더 정보 편집*/
+
+		//폴더 편집 더보기
+		function scriptMore(){
+			$('#m_scriptMore').addClass('open');
+		}
+
+		//폴더 이름 변경
+		function floderRename(){
+			$('#p_scriptNameSetting').addClass('open');
+			$('#folderNameSetting').text('폴더 이름 변경');
+			$('#scriptFolerNameIpt').focus();
+			$('#scriptNameType').text('폴더명');
+			$('#scriptNameSave').text('저 장');
+		}
+
+		//폴더 복사
+		function floderCopy(){
+			$('#p_scriptNameSetting').addClass('open');
+			$('#folderNameSetting').text('스크립트 폴더 복사');
+			$('#scriptFolerNameIpt').val('').focus();
+			$('#scriptNameType').text('신규 폴더명');
+			$('#scriptNameSave').text('생성하기');
+		}
+
+		//폴더 삭제
+		function folderDelete(){
+			$.ajax({
+				url : "/admin/script/pop/delete/alert",
+				method : "get"
+			}).done(function(result){
+				$("body").append(result);
+			})
+		}
+
+		//폴더 삭제 완료
+		function saveScriptSDelete(obj){
+			$(obj).parents('.pop').removeClass('open');
+			toast('스크립트 폴더가 삭제되었습니다.')
+		}
+
+		/*----------table checked*/
+
+		//선택 check
+		$('[name="tblChk"]').click(function(){
+			
+			//selected 표시
+			if( $(this).is(':checked',true )){
+				$(this).parents('tr').addClass('selected');
+			}else{
+				$(this).parents('tr').removeClass('selected');
+			}
+
+			//체크 카운트
+			var chkCount = $('[name="tblChk"]:checked').length;
+			var chkbox = $('[name="tblChk"]').length;
+
+			//삭제 갯수 체크
+			if( chkCount === 0 ){
+				$('#trDelete').hide();
+			}else{
+				$('#trDelete').show();
+				$('#deleteCount').text(chkCount+'개');
+			}
+
+			//전체 선택 반영
+			if(chkCount == chkbox ){
+				$('[name="tblChkAll"]').prop('checked', true);
+				$('#deleteCount').text('전체');
+			}else if( chkCount !== chkbox ){
+				$('[name="tblChkAll"]').prop('checked', false);
+			}
+		});
+
+		//전체 선택 check
+		$('[name="tblChkAll"]').click(function(){
+			
+			//삭제 갯수 체크
+			if( $('[name="tblChkAll"]').is(':checked', true) ){
+				$('#trDelete').show();
+				$('#deleteCount').text('전체');
+				$('[name="tblChk"]').prop('checked', true);
+				$('[name="tblChk"]').parents('tr').addClass('selected');
+			}else{
+				$('#trDelete').hide();
+				$('[name="tblChk"]').prop('checked', false);
+				$('[name="tblChk"]').parents('tr').removeClass('selected');
+			}
+		});
+
+		/*----------검색 버튼 영역*/
+		//삭제 
+		function trDelete(){
+			$('.tblBody tr.selected').remove();
+			$('[name="tblChkAll"]').prop('checked', false);
+			toast('스크립트가 삭제 되었습니다.');
+		}
+
+		//행추가
+		function trAdd(){
+			var html = "<tr>";
+			html +=	"<td>";
+			html +=	"<div class='chk'>";
+			html +=	"<input type='checkbox' name='tblChk' id='tblChk1'>";
+			html +=	"<label for='tblChk1'>";
+			html +=	"<span class='chkShape'></span>";
+			html +=	"</label>";
+			html +=	"</div>";
+			html +=	"</td>";
+			html +=	"<td>";
+			html +=	"<textarea id='iptCategory'></textarea>";
+			html +=	"</td>";
+			html +=	"<td>";
+			html +=	"<textarea></textarea>";
+			html +=	"</td>";
+			html +=	"<td>";
+			html +=	"<textarea></textarea>";
+			html +=	"</td>";
+			html += "</tr>";
+
+			$('#scriptTbl table').append(html);
+			$('#iptCategory').focus(); //카테고리 자동 focus
+		}
+
+		//저장
+		function save(){
+			toast('저장되었습니다.')
+		}
+
+
+		/*----------파일 업로드 (스크립트 0개일때만 사용)*/
+		function excelUpload(){
+			$('#excelUpload').show();
+		}
+
+		$(document).ready(function () {
+			function isOverflown(element) {
+				return (
+					element.scrollHeight > element.clientHeight ||
+					element.scrollWidth > element.clientWidth
+					);
+			}
+
+			var onDragEnter = function (event) {
+				event.preventDefault();
+				$(".dashed-zone").addClass("undashed");
+			},
+			onDragOver = function (event) {
+				event.preventDefault();
+				if (!$(".dashed-zone").hasClass("undashed"))
+					$(".dashed-zone").addClass("undashed");
+			},
+			onDragLeave = function (event) {
+				event.preventDefault();
+				$(".dashed-zone").removeClass("undashed");
+			},
+			onDrop = function (event) {
+				event.preventDefault();
+				console.log(event.originalEvent.dataTransfer.files);
+				$(".dashed-zone").removeClass("undashed");
+				var filename = event.originalEvent.dataTransfer.files[0].name;
+				var filetype = filename.split(".").pop();
+				$("#filename").text(filename);
+
+				if (filetype == "csv") {
+					$(".fileImg").html('<i class="fas fa-file-csv"></i>');
+					$(".fileImg").css(
+						"background",
+						"linear-gradient(135deg, #020024 0%, #7ce2c4 0%, #00c389 100%)"
+						);
+				} else if (
+					filetype == "xlsx" ||
+					filetype == "xlsm" ||
+					filetype == "xlsb" ||
+					filetype == "xltx" ||
+					filetype == "xltm" ||
+					filetype == "xls"
+					) {
+				/*$(".fileImg").html('<i class="far fa-file-excel"></i>');
+				$(".fileImg").css(
+					"background",
+					"linear-gradient(135deg, #020024 0%, #7ce2c4 0%, #00c389 100%)"
+					);*/
+				} else if (
+					filetype == "jfif" ||
+					filetype == "jpg" ||
+					filetype == "png" ||
+					filetype == "gif"
+					) {
+			/*	$(".fileImg").html('<i class="far fa-file-image"></i>');
+				$(".fileImg").css(
+					"background",
+					"linear-gradient(135deg, rgba(47,128,253,1) 0%, rgba(178,255,218,1) 100%)"
+					);*/
+				} else if (filetype == "pdf") {
+			/*	$(".fileImg").html('<i class="far fa-file-pdf"></i>');
+				$(".fileImg").css(
+					"background",
+					"linear-gradient(135deg, rgba(241,70,88,1) 0%, rgba(217,46,93,1) 100%)"
+					);*/
+				} else {
+			/*	$(".fileImg").html('<i class="far fa-file"></i>');
+				$(".fileImg").css(
+					"background",
+					"linear-gradient(135deg, rgba(11,99,246,1) 0%, rgba(0,60,197,1) 100%)"
+					);*/
+				}
+
+				var element = $("#filename");
+				console.log(isOverflown(element));
+
+				//ui변경
+				$('.fileWrap').hide();
+				$('#dictionaryTbl').show();
+				$('.fileView').show();
+			};
+
+			$(".dashed-zone")
+			.on("dragenter", onDragEnter)
+			.on("dragover", onDragOver)
+			.on("dragleave", onDragLeave)
+			.on("drop", onDrop);
+		});
+
+
+
+	</script>
+</body>
+</html>

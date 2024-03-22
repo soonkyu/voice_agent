@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanil.edubot.module.member.scenario.ScenarioMapper">
+
+    <resultMap id="scenarioResult" type="scenario">
+        <result property="scenarioIdx" column="idx" />
+        <result property="scenarioTitle" column="scenario_title"/>
+        <result property="scenarioDescription" column="scenario_description"/>
+        <result property="actorId" column="actor_id"/>
+        <result property="emotion" column="emotion"/>
+        <result property="callCount" column="call_count"/>
+        <result property="completeCnt" column="complete_count"/>
+        <result property="incompleteCnt" column="incomplete_count"/>
+        <result property="progress" column="progress"/>
+        <result property="userYn" column="user_yn"/>
+        <result property="completeYn" column="complete_yn"/>
+        <result property="createdAt" column="create_time"/>
+        <collection property="scenarioDetails" resultMap="scenarioDetailResult"/>
+    </resultMap>
+
+    <resultMap id="scenarioDetailResult" type="scenarioDetail">
+        <result property="scenarioDetailIdx" column="idx"/>
+        <result property="type" column="type"/>
+        <result property="contents" column="contents"/>
+        <result property="seq" column="seq"/>
+        <result property="wav" column="wav"/>
+        <result property="wavEndTime" column="wav_len"/>
+        <result property="timelineText" column="timeline_txt"/>
+        <result property="createdAt" column="create_time"/>
+        <result property="modifiedAt" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="callHistoryResult" type="callHistory">
+        <result property="callHistoryIdx" column="call_history_idx"/>
+        <result property="scenarioIdx" column="scenario_idx"/>
+        <result property="scenarioTitle" column="scenario_title"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="callHistoryWavFile" column="call_history_wav"/>
+        <result property="progress" column="progress"/>
+        <result property="EndDateTime" column="end_time"/>
+        <result property="minScore" column="min_score"/>
+        <result property="maxScore" column="max_score"/>
+        <collection property="callHistoryDetails" resultMap="callHistoryDetailResult"/>
+    </resultMap>
+
+    <resultMap id="callHistoryDetailResult" type="callHistoryDetail">
+        <result property="callHistoryDetailIdx" column="call_history_detail_idx"/>
+        <result property="seq" column="seq"/>
+        <result property="speaker" column="speaker"/>
+        <result property="txtByScript" column="contents"/>
+        <result property="txtByPerson" column="txt"/>
+        <result property="score" column="score"/>
+        <result property="onset" column="voice_onset_time"/>
+    </resultMap>
+
+    <select id="selectListByMember" resultMap="scenarioResult">
+        SELECT
+            a.idx, a.scenario_title, a.scenario_description, a.actor_id, a.emotion,
+            a.use_yn, a.complete_yn, a.create_time,
+            COUNT(b.scenario_idx) AS call_count,
+            COUNT(if(progress = 100, 1, null)) AS complete_count,
+            COUNT(if(progress != 100, 1, NULL)) AS incomplete_count,
+            IFNULL(MAX(b.progress),0) as progress
+        FROM
+            tb_scenario a
+        LEFT OUTER JOIN tb_scenario_call_history b
+            ON a.idx = b.scenario_idx AND b.phone_number = #{username}
+        GROUP BY a.idx
+        ORDER BY progress DESC;
+    </select>
+
+
+    <select id="selectCallHistories" resultMap="callHistoryResult">
+        SELECT
+            a.idx as call_history_idx, a.scenario_idx, c.scenario_title, phone_number,
+            progress, date_format(end_time, '%y.%m.%d %T') as end_time,
+            MAX(b.score) AS max_score,
+            MIN(b.score) AS min_score
+        from
+            tb_scenario_call_history a
+        INNER JOIN tb_scenario_call_history_detail b
+            ON a.idx = b.call_history_idx AND b.speaker ='person'
+        INNER JOIN tb_scenario c
+            ON a.scenario_idx = c.idx
+        WHERE
+            a.scenario_idx = #{scenarioIdx} and phone_number = #{phoneNumber}
+        GROUP BY a.idx
+        order by progress DESC, end_time DESC
+    </select>
+
+
+    <select id="selectScenario" resultMap="scenarioResult">
+        SELECT
+            a.idx AS scenario_idx, a.scenario_title, a.scenario_description, a.actor_id, a.emotion,
+            a.use_yn, a.complete_yn,
+            b.idx AS scenario_detail_idx,
+            b.`type`, b.seq, b.contents, b.wav, b.wav_len, b.timeline_txt
+        FROM
+            tb_scenario a
+        INNER JOIN tb_scenario_detail b
+            ON b.scenario_idx = a.idx
+        WHERE
+            a.idx = #{scenarioIdx}
+        ORDER BY b.seq
+    </select>
+
+    <select id="selectCallHistory" resultMap="callHistoryResult">
+        SELECT
+            a.idx as call_history_idx, a.scenario_idx, b.scenario_title, a.wav_dir AS call_wav,
+            c.idx as call_history_detail_idx,
+            d.seq,
+            c.speaker,
+            d.contents,
+            c.txt,
+            c.score AS score,
+            c.voice_onset_time as onset
+        FROM
+            tb_scenario_call_history a
+        INNER JOIN tb_scenario b
+            ON b.idx = a.scenario_idx
+        INNER JOIN tb_scenario_call_history_detail c
+            ON a.idx = c.call_history_idx
+            AND b.idx = c.scenario_idx
+        INNER JOIN tb_scenario_detail d
+            ON c.scenario_idx = d.scenario_idx
+            AND c.scenario_seq = d.seq
+            AND c.speaker = d.type
+        WHERE a.idx = #{callHistoryIdx};
+    </select>
+
+</mapper>

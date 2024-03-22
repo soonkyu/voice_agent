@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=0, user-scalable=no, target-densitydpi=medium-dpi" />
+	<meta name="format-detection" content="telephone=no,address=no,email=no">
+	<!-- 캐쉬 삭제  -->
+	<meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+	<meta http-equiv="Expires" content="-1">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<!-- 캐쉬 삭제  -->
+	<title>VOICE AGENT / 메인</title>
+	<!-------- css -->
+	<link rel="stylesheet" href="../../css/common.css"/>
+	<link rel="stylesheet" href="../../css/page.css"/>
+</head>
+<body>
+	<div class="wrap_app">
+		<div class="main_hd">
+			<label class="label">전화 받을 번호</label>
+			<strong>010.8862.6941</strong>
+			<a href="../callResult/callResult.html" class="a_link">통화내역</a>
+		</div>
+		<!--//main_hd-->
+		<div class="script_recent">
+			<label class="label">최근 사용한 스크립트</label>
+			<ul class="script_list">
+				<li>
+					<div class="script_info">
+						<p>스크립트 제목은 여기에</p>
+						<span>070-4515-5665</span>
+					</div>
+					<div class="script_btn">
+						<a href="javascript:;" class="a_script" onclick="script();"><i class="ico_script"></i></a>
+						<a href="javascript:;" class="a_callBalsin" onclick="balsin();"><i class="ico_callBalsin"></i></a>
+					</div>
+				</li>
+			</ul>
+			<!--//script_list-->
+		</div>
+		<div class="main_con">
+			<div class="sch">
+				<i class="ico_sch"></i>
+				<input type="text" placeholder="검색어를 입력하세요">
+			</div>
+			<!--//sch-->
+			<ul class="script_list">
+				<li>
+					<div class="script_info">
+						<p>스크립트 제목은 여기에</p>
+						<span>070-4515-5665</span>
+					</div>
+					<div class="script_btn">
+						<a href="javascript:;" class="a_script" onclick="script();"><i class="ico_script"></i></a>
+						<a href="javascript:;" class="a_callBalsin" onclick="balsin();"><i class="ico_callBalsin"></i></a>
+					</div>
+				</li>
+			</ul>
+			<!--//script_list-->
+		</div>
+		<!--//main_con-->
+	</div>
+	<!--//wrap_app-->
+	<section class="pop " id="p_balsin">
+		<div class="pop_box">
+			<div class="pop_con align_c">
+				<p class="balsin_sec m-b40"><span id="balsin_sec">5초</span> 후 화면이 종료됩니다.</p>
+				<div class="balsin_script m-b20">
+					<strong>스크립트 제목은 여기에</strong><br>로 상담이 진행됩니다.
+				</div>
+				<div class="balsin_num">
+					<label class="label m-b8">발신번호</label>
+					<p>070-4335-4615</p>
+				</div>
+			</div>
+			<!--//pop_con-->
+			<div class="pop_btn_area">
+				<button type="button" class="btn_p" onclick="pop_close(this);">확 인</button>
+			</div>
+		</div>
+		<!--//pop_box-->
+	</section>
+	<!--//pop , 발신팝업 -->
+	<section class="page " id="page_script">
+		<div class="page_hd line">
+			<a href="javascript:;" class="page_close"><i class="ico_close"></i></a>
+		</div>
+		<div class="page_con">
+			<div class="script_hd">
+				<p>스크립트 제목은 여기에</p>
+				<label class="label">070-4515-5665</label>
+			</div>
+			<!--//script_hd-->
+			<div class="script_con">
+				<ul>
+					<li >
+						<p>상담사</p>
+						<div class="chat_comt">
+							안녕하세요. 상담사입니다
+						</div>
+					</li>
+					<li class="customer">
+						<p>A고객</p>
+						<div class="chat_comt">
+							네 안녕하세요
+						</div>
+					</li>
+					<li>
+						<p>상담사</p>
+						<div class="chat_comt">
+							궁금한 보험이 있으세요?
+						</div>
+					</li>
+					<li class="customer on">
+						<p>A고객</p>
+						<div class="chat_comt">
+							최과보험이요
+						</div>
+					</li>
+					<li>
+						<p>상담사</p>
+						<div class="chat_comt">
+							치과보험은요?치과보험은요?치과보
+							험은요?치과보험은요?치과보험은
+							요?치과보험은요?치과보험은요?치
+							과보험은요?치과보험은요?
+						</div>
+					</li>
+				</ul>
+			</div>
+			<!--//script_con-->
+		</div>
+		<!--//page_con-->
+	</section>
+	<!--//page, 스크립트보기-->
+	<section class="page " id="page_callResult">
+		<div class="page_hd line">
+			<span class="page_title">통화내역</span>
+			<a href="javascript:;" class="page_close"><i class="ico_close"></i></a>
+		</div>
+		<div class="page_con ">
+			<div class="list_option">
+				<div>전체<strong>16</strong></div>
+				<select>
+					<option>최신순</option>
+					<option>오래된순</option>
+					<option>진행율 높은순</option>
+					<option>진행율 낮은순</option>
+				</select>
+			</div>
+			<!--//list_option-->
+			<div class="result_list">
+				<ul>
+					<li>
+						<p class="label2">2022.07.20 13:15:12</p>
+						<div class="result_info">
+							<div>
+								<strong>스크립트 제목은 여기에</strong>
+								<label class="label">070-4515-5665</label>
+							</div>
+							<button type="button" onclick="result_play();" class="result_play"></button>
+						</div>
+						<!--//result_info-->
+						<div class="result_chart">
+							<p class="label2">진행율</p>
+							<div>
+								<strong id="balsin_sec">60%</strong>
+								<div class="result_per step1">
+									<!-- result_per addClass( 0~20%: 'step1', 21~40%: 'step2', 41~60%: 'step3', 61~80%: 'step4', 81~100%: 'step5' )-->
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+								</div>
+							</div>
+						</div>
+						<!--//result_chart-->
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!--//page_con-->
+	</section>
+	<!--//page, 통화내역-->
+
+
+
+	<script th:src="@{/js/jquery-3.6.0.js}"></script>
+	<script th:src="@{/lib/jplayer/jquery.jplayer.min.js}" ></script>
+	<script>
+
+		//발신
+		function balsin(){
+			$('#p_balsin').addClass('open');
+
+			//초 카운트
+			var timer = 5;
+
+			var interval = setInterval(function() {
+				timer--;
+				$('#balsin_sec').text(timer+'초');
+				//5초 후
+				if (timer === 0){
+					clearInterval(interval); //0초까지만
+					pop_close(); //팝업 종료
+				};
+			}, 1000);
+		}
+
+
+
+
+		
+
+		//팝업닫기
+		function pop_close(obj){
+			$('.pop').removeClass('open');
+		}
+
+		//스크립트 보기
+		function script(){
+			$('#page_script').addClass('open');
+		}
+
+		//페이지 닫기
+		$('.page_close').click(function(){
+			$(this).parents('.page').removeClass('open');
+		});
+
+		//통화내역 플레이어
+		function result_play(){
+
+		}
+
+
+		
+
+
+
+
+	</script>
+</body>
+</html>

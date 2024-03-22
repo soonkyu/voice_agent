@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script th:inline="javascript">
+        const error_msg = [[${msg}]];
+        const next_page = [[${location}]];
+
+        alert(error_msg);
+       location.href= '' + next_page;
+
+
+    </script>
+</head>
+<body>
+</body>
+</html>
